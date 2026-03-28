@@ -20,7 +20,7 @@ export default function Home() {
               Desde 6 de Abril de 1950
             </p>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-8">
-              mais de 75 anos ao serviço do desporto e da comunidade de Alcainça
+              76 anos ao serviço do desporto e da comunidade de Alcainça
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -128,7 +128,7 @@ export default function Home() {
               },
               {
                 date: "18 Abr 2026",
-                title: "Jantar 76.º Aniversário",
+                title: "Jantar 70.º Aniversário",
                 desc: "Jantar comemorativo às 19h30 na sede. Marcação obrigatória.",
                 type: "Evento",
               },
@@ -181,9 +181,9 @@ export default function Home() {
                 desc: "Fique atento às inscrições para a nova temporada nas modalidades de futebol e patinagem artística.",
               },
               {
-                title: "mais de 75 anos de história",
+                title: "76 anos de história",
                 date: "Abril 2026",
-                desc: "O Alcainça AC prepara-se para celebrar mais de 75 anos ao serviço da comunidade e do desporto.",
+                desc: "O Alcainça AC prepara-se para celebrar 76 anos ao serviço da comunidade e do desporto.",
               },
             ].map((news, i) => (
               <article

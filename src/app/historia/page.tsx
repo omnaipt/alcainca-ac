@@ -11,7 +11,7 @@ export default function Historia() {
     { ano: "Anos 60-70", titulo: "Primeiros Passos", desc: "Os primeiros anos do clube são marcados pelo crescimento e pela consolidação no panorama desportivo local." },
     { ano: "Anos 80-90", titulo: "Crescimento", desc: "O clube expande as suas instalações e reforça a formação de jovens atletas." },
     { ano: "Anos 2000", titulo: "Novas Modalidades", desc: "Para além do futebol, o clube alarga a sua oferta desportiva com a patinagem artística." },
-    { ano: "Presente", titulo: "Tradição e Futuro", desc: "Com mais de 75 anos de história, o Alcainça AC continua a ser um pilar da comunidade, formando atletas e promovendo o desporto." },
+    { ano: "Presente", titulo: "Tradição e Futuro", desc: "Com 76 anos de história, o Alcainça AC continua a ser um pilar da comunidade, formando atletas e promovendo o desporto." },
   ];
 
   return (
@@ -20,7 +20,7 @@ export default function Historia() {
       <section className="bg-navy text-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4">A Nossa História</h1>
-          <p className="text-xl text-gold">mais de 75 anos de paixão pelo desporto</p>
+          <p className="text-xl text-gold">76 anos de paixão pelo desporto</p>
         </div>
       </section>
 
