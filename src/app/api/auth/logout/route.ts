@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { deleteSession } from "@/lib/session";
+import { deleteEventosSession } from "@/lib/session";
 
 export async function POST() {
-  await deleteSession();
+  await deleteEventosSession();
   return NextResponse.json({ ok: true });
 }

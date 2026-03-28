@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyCaixaSession } from "@/lib/caixa-session";
+import { verifyCaixaSession } from "@/lib/session";
 import { getMovimentos, addMovimento, initSheet } from "@/lib/google";
 
 export async function GET() {

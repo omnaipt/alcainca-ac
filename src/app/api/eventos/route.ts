@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifySession } from "@/lib/session";
+import { verifyEventosSession } from "@/lib/session";
 import type { Evento } from "@/lib/eventos";
 
 const REPO = "omnaipt/alcainca-ac";
@@ -58,7 +58,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  if (!(await verifySession())) {
+  if (!(await verifyEventosSession())) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  if (!(await verifySession())) {
+  if (!(await verifyEventosSession())) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
@@ -109,7 +109,7 @@ export async function PUT(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  if (!(await verifySession())) {
+  if (!(await verifyEventosSession())) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 

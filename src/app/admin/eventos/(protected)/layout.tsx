@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
-import { verifySession } from "@/lib/session";
+import { verifyEventosSession } from "@/lib/session";
 
 export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const isAuth = await verifySession();
-  if (!isAuth) {
+  const user = await verifyEventosSession();
+  if (!user) {
     redirect("/admin/eventos/login");
   }
 
@@ -19,7 +19,7 @@ export default async function ProtectedLayout({
             <img src="/images/logo.png" alt="AAC" className="h-10 w-auto" />
             <div>
               <h1 className="font-bold text-lg leading-tight">Gestão de Eventos</h1>
-              <p className="text-xs text-gray-300">Alcainça Atlético Clube</p>
+              <p className="text-xs text-gray-300">{user.nome} &middot; {user.cargo}</p>
             </div>
           </div>
           <form action="/api/auth/logout" method="POST">

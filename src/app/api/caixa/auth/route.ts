@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createCaixaSession, getUsers, getUsersSafe } from "@/lib/caixa-session";
+import { createCaixaSession, getUsers, getUsersSafe } from "@/lib/session";
 
 export async function GET() {
   // Return list of users (without passwords) for the login dropdown

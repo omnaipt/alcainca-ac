@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { verifyCaixaSession } from "@/lib/caixa-session";
+import { verifyCaixaSession } from "@/lib/session";
 
 export default async function CaixaProtectedLayout({
   children,

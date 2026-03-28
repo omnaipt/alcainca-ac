@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
-import { createSession } from "@/lib/session";
+import { createEventosSession, getUsers, getUsersSafe } from "@/lib/session";
+
+export async function GET() {
+  return NextResponse.json(getUsersSafe());
+}
 
 export async function POST(req: Request) {
-  const { password } = await req.json();
+  const { id, password } = await req.json();
+  const users = getUsers();
+  const user = users.find((u) => u.id === id);
 
-  if (!process.env.EVENTOS_PASSWORD) {
-    return NextResponse.json({ error: "Server not configured" }, { status: 500 });
+  if (!user || user.password !== password) {
+    return NextResponse.json({ error: "Credenciais incorretas" }, { status: 401 });
   }
 
-  if (password !== process.env.EVENTOS_PASSWORD) {
-    return NextResponse.json({ error: "Password incorreta" }, { status: 401 });
-  }
-
-  await createSession();
-  return NextResponse.json({ ok: true });
+  await createEventosSession({ id: user.id, nome: user.nome, cargo: user.cargo });
+  return NextResponse.json({ ok: true, nome: user.nome });
 }

@@ -1,13 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+type User = { id: string; nome: string; cargo: string };
+
+export default function EventosLogin() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedId, setSelectedId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/auth")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setUsers(data);
+      });
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,14 +30,14 @@ export default function LoginPage() {
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ id: selectedId, password }),
       });
 
       if (res.ok) {
         router.push("/admin/eventos");
         router.refresh();
       } else {
-        setError("Password incorreta");
+        setError("Credenciais incorretas");
       }
     } catch {
       setError("Erro de ligação");
@@ -41,7 +53,7 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-navy rounded-xl flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
             <h1 className="text-xl font-bold text-navy">Gestão de Eventos</h1>
@@ -50,23 +62,35 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Diretor</label>
+              <select
+                value={selectedId}
+                onChange={(e) => setSelectedId(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy focus:border-navy outline-none"
+                required
+              >
+                <option value="">Selecione o seu nome</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nome} ({u.cargo})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <input
-                id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy focus:border-navy outline-none transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy focus:border-navy outline-none"
                 placeholder="Introduza a password"
                 required
               />
             </div>
 
-            {error && (
-              <p className="text-red-600 text-sm text-center">{error}</p>
-            )}
+            {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
             <button
               type="submit"
