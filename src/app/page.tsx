@@ -128,7 +128,7 @@ export default function Home() {
               },
               {
                 date: "18 Abr 2026",
-                title: "Jantar 70.º Aniversário",
+                title: "Jantar 76.º Aniversário",
                 desc: "Jantar comemorativo às 19h30 na sede. Marcação obrigatória.",
                 type: "Evento",
               },
