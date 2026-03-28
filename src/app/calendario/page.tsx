@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import jogosData from "@/data/jogos.json";
 
 export const metadata: Metadata = {
   title: "Calendário",
@@ -14,40 +15,7 @@ type Jogo = {
   competicao: string;
 };
 
-const jogos: Jogo[] = [
-  { data: "07 Set 2025", casa: "SRD Negrais", fora: "Alcainça AC", resultado: "4-5 (a.p.)", jornada: "1.ª Elim.", competicao: "Taça AF Lisboa" },
-  { data: "14 Set 2025", casa: "Alcainça AC", fora: "Monte Agrão", resultado: "1-4", jornada: "2.ª Elim.", competicao: "Taça AF Lisboa" },
-  { data: "21 Set 2025", casa: "Alcainça AC", fora: "Aveiras", resultado: "1-1", jornada: "J1", competicao: "III Divisão Série 1" },
-  { data: "28 Set 2025", casa: "Vilafranquense", fora: "Alcainça AC", resultado: "2-1", jornada: "J2", competicao: "III Divisão Série 1" },
-  { data: "05 Out 2025", casa: "Alcainça AC", fora: "Freiria", resultado: "DA", jornada: "J3", competicao: "III Divisão Série 1" },
-  { data: "12 Out 2025", casa: "A dos Cunhados", fora: "Alcainça AC", resultado: "2-3", jornada: "J4", competicao: "III Divisão Série 1" },
-  { data: "19 Out 2025", casa: "Alcainça AC", fora: "Monte Agrão", resultado: "0-1", jornada: "J5", competicao: "III Divisão Série 1" },
-  { data: "26 Out 2025", casa: "Alcainça AC", fora: "SC Livramento", resultado: "2-1", jornada: "J21", competicao: "III Divisão Série 1" },
-  { data: "02 Nov 2025", casa: "Alcainça AC", fora: "Juv. Castanheira", resultado: "1-1", jornada: "J7", competicao: "III Divisão Série 1" },
-  { data: "09 Nov 2025", casa: "Venda do Pinheiro", fora: "Alcainça AC", resultado: "5-1", jornada: "J8", competicao: "III Divisão Série 1" },
-  { data: "16 Nov 2025", casa: "Alcainça AC", fora: "Sobreirense", resultado: "5-3", jornada: "J24", competicao: "III Divisão Série 1" },
-  { data: "30 Nov 2025", casa: "Alcainça AC", fora: "Pedra", resultado: "1-1", jornada: "J10", competicao: "III Divisão Série 1" },
-  { data: "07 Dez 2025", casa: "Igreja Nova", fora: "Alcainça AC", resultado: "4-1", jornada: "J11", competicao: "III Divisão Série 1" },
-  { data: "14 Dez 2025", casa: "Alcainça AC", fora: "SRD Negrais", resultado: "0-1", jornada: "J12", competicao: "III Divisão Série 1" },
-  { data: "21 Dez 2025", casa: "São Pedro", fora: "Alcainça AC", resultado: "2-1", jornada: "J13", competicao: "III Divisão Série 1" },
-  { data: "11 Jan 2026", casa: "Alcainça AC", fora: "Arrudense", resultado: "5-1", jornada: "J14", competicao: "III Divisão Série 1" },
-  { data: "18 Jan 2026", casa: "Alenquer e Benfica", fora: "Alcainça AC", resultado: "0-1", jornada: "J15", competicao: "III Divisão Série 1" },
-  { data: "25 Jan 2026", casa: "Aveiras", fora: "Alcainça AC", resultado: "1-2", jornada: "J16", competicao: "III Divisão Série 1" },
-  { data: "01 Fev 2026", casa: "Alcainça AC", fora: "Vilafranquense", resultado: "0-1", jornada: "J17", competicao: "III Divisão Série 1" },
-  { data: "13 Fev 2026", casa: "Freiria", fora: "Alcainça AC", resultado: "3-2", jornada: "J18", competicao: "III Divisão Série 1" },
-  { data: "22 Fev 2026", casa: "Alcainça AC", fora: "A dos Cunhados", resultado: "2-1", jornada: "J19", competicao: "III Divisão Série 1" },
-  { data: "01 Mar 2026", casa: "Monte Agrão", fora: "Alcainça AC", resultado: "3-4", jornada: "J20", competicao: "III Divisão Série 1" },
-  { data: "08 Mar 2026", casa: "SC Livramento", fora: "Alcainça AC", resultado: "0-1", jornada: "J6", competicao: "III Divisão Série 1" },
-  { data: "15 Mar 2026", casa: "Juv. Castanheira", fora: "Alcainça AC", resultado: "2-1", jornada: "J22", competicao: "III Divisão Série 1" },
-  { data: "22 Mar 2026", casa: "Alcainça AC", fora: "Venda do Pinheiro", resultado: "2-3", jornada: "J23", competicao: "III Divisão Série 1" },
-  { data: "29 Mar 2026", casa: "Sobreirense", fora: "Alcainça AC", jornada: "J9", competicao: "III Divisão Série 1" },
-  { data: "12 Abr 2026", casa: "Pedra", fora: "Alcainça AC", jornada: "J25", competicao: "III Divisão Série 1" },
-  { data: "19 Abr 2026", casa: "Alcainça AC", fora: "Igreja Nova", jornada: "J26", competicao: "III Divisão Série 1" },
-  { data: "26 Abr 2026", casa: "Alcainça AC", fora: "SRD Negrais", jornada: "J27", competicao: "III Divisão Série 1" },
-  { data: "03 Mai 2026", casa: "Alcainça AC", fora: "São Pedro", jornada: "J28", competicao: "III Divisão Série 1" },
-  { data: "10 Mai 2026", casa: "Arrudense", fora: "Alcainça AC", jornada: "J29", competicao: "III Divisão Série 1" },
-  { data: "17 Mai 2026", casa: "Alcainça AC", fora: "Alenquer e Benfica", jornada: "J30", competicao: "III Divisão Série 1" },
-];
+const jogos: Jogo[] = jogosData;
 
 function isAlcaincaHome(jogo: Jogo) {
   return jogo.casa === "Alcainça AC";
@@ -97,6 +65,22 @@ const bailes = [
 export default function Calendario() {
   const jogados = jogos.filter((j) => j.resultado);
   const proximos = jogos.filter((j) => !j.resultado);
+
+  // Stats dinâmicas
+  const totalJogos = jogados.filter((j) => j.resultado !== "DA").length;
+  let vitorias = 0, empates = 0, derrotas = 0, golosMarcados = 0, golosSofridos = 0;
+  for (const j of jogados) {
+    const label = getResultLabel(j);
+    if (label === "V") vitorias++;
+    else if (label === "E") empates++;
+    else if (label === "D") derrotas++;
+    if (j.resultado && j.resultado !== "DA") {
+      const parts = j.resultado.replace(/ \(a\.p\.\)/, "").split("-").map(Number);
+      const isHome = isAlcaincaHome(j);
+      golosMarcados += isHome ? parts[0] : parts[1];
+      golosSofridos += isHome ? parts[1] : parts[0];
+    }
+  }
 
   return (
     <>
@@ -178,23 +162,23 @@ export default function Calendario() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
             <div className="bg-gray-50 rounded-xl p-4">
-              <span className="block text-2xl font-bold text-navy">25</span>
+              <span className="block text-2xl font-bold text-navy">{totalJogos}</span>
               <span className="text-sm text-gray-500">Jogos</span>
             </div>
             <div className="bg-green-50 rounded-xl p-4">
-              <span className="block text-2xl font-bold text-green-700">11</span>
+              <span className="block text-2xl font-bold text-green-700">{vitorias}</span>
               <span className="text-sm text-gray-500">Vitórias</span>
             </div>
             <div className="bg-yellow-50 rounded-xl p-4">
-              <span className="block text-2xl font-bold text-yellow-700">3</span>
+              <span className="block text-2xl font-bold text-yellow-700">{empates}</span>
               <span className="text-sm text-gray-500">Empates</span>
             </div>
             <div className="bg-red-50 rounded-xl p-4">
-              <span className="block text-2xl font-bold text-red-700">11</span>
+              <span className="block text-2xl font-bold text-red-700">{derrotas}</span>
               <span className="text-sm text-gray-500">Derrotas</span>
             </div>
             <div className="bg-navy/5 rounded-xl p-4 col-span-2 md:col-span-1">
-              <span className="block text-2xl font-bold text-navy">46-47</span>
+              <span className="block text-2xl font-bold text-navy">{golosMarcados}-{golosSofridos}</span>
               <span className="text-sm text-gray-500">Golos M/S</span>
             </div>
           </div>
