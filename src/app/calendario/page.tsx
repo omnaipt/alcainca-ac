@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import jogosData from "@/data/jogos.json";
+import { getEventosFuturos, getTipoBadgeClass } from "@/lib/eventos";
 
 export const metadata: Metadata = {
   title: "Calendário",
@@ -63,6 +64,7 @@ const bailes = [
 ];
 
 export default function Calendario() {
+  const eventosFuturos = getEventosFuturos();
   const jogados = jogos.filter((j) => j.resultado);
   const proximos = jogos.filter((j) => !j.resultado);
 
@@ -92,70 +94,53 @@ export default function Calendario() {
       </section>
 
       {/* Eventos Especiais */}
-      <section className="py-10 bg-gold/10 border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-navy mb-6 flex items-center gap-2">
-            <span className="text-2xl">📋</span>
-            Eventos do Clube
-          </h2>
-          <div className="space-y-4">
-            {/* Assembleia Geral */}
-            <div className="bg-white rounded-xl p-6 border border-gold/30 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="bg-navy text-white rounded-lg p-3 text-center min-w-[70px] shrink-0">
-                  <span className="block text-xs font-medium text-gold">Mar</span>
-                  <span className="block text-2xl font-bold leading-tight">30</span>
-                  <span className="block text-xs">21:00</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-navy/10 text-navy">Sócios</span>
+      {eventosFuturos.length > 0 && (
+        <section className="py-10 bg-gold/10 border-b">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold text-navy mb-6 flex items-center gap-2">
+              <span className="text-2xl">📋</span>
+              Eventos do Clube
+            </h2>
+            <div className="space-y-4">
+              {eventosFuturos.map((evento) => {
+                const d = new Date(evento.data + "T00:00:00");
+                const mes = d.toLocaleString("pt-PT", { month: "short" }).replace(".", "");
+                const dia = d.getDate();
+                return (
+                  <div key={evento.id} className="bg-white rounded-xl p-6 border border-gold/30 shadow-sm">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-navy text-white rounded-lg p-3 text-center min-w-[70px] shrink-0">
+                        <span className="block text-xs font-medium text-gold capitalize">{mes}</span>
+                        <span className="block text-2xl font-bold leading-tight">{dia}</span>
+                        <span className="block text-xs">{evento.hora}</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${getTipoBadgeClass(evento.tipo)}`}>
+                            {evento.tipo}
+                          </span>
+                        </div>
+                        <h3 className="font-bold text-navy text-lg">{evento.titulo}</h3>
+                        <p className="text-gray-600 text-sm mt-1">{evento.local}</p>
+                        {evento.descricao && (
+                          <div className="mt-3 bg-gray-50 rounded-lg p-4 text-sm text-gray-600 whitespace-pre-line">
+                            {evento.descricao}
+                          </div>
+                        )}
+                        {evento.marcacaoObrigatoria && (
+                          <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
+                            <strong>Marcação obrigatória.</strong> Contacte o clube para reservar o seu lugar.
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="font-bold text-navy text-lg">Assembleia Geral Ordinária</h3>
-                  <p className="text-gray-600 text-sm mt-1">
-                    Pavilhão do Alcainça Atlético Clube, às 21h em primeira convocação.
-                    Se não estiverem presentes dois terços dos sócios, realiza-se em segunda convocação 30 minutos depois.
-                  </p>
-                  <div className="mt-3 bg-gray-50 rounded-lg p-4 text-sm">
-                    <h4 className="font-bold text-navy mb-2">Ordem dos Trabalhos:</h4>
-                    <ol className="list-decimal list-inside space-y-1 text-gray-600">
-                      <li>Apreciação, discussão e aprovação do Relatório e Contas do Exercício de 2026 e Parecer do Conselho Fiscal</li>
-                      <li>Plano de Atividades para o ano de 2026</li>
-                      <li>Orçamento para o ano de 2026</li>
-                      <li>Assuntos Diversos</li>
-                    </ol>
-                    <p className="mt-3 text-xs text-gray-400">A Presidente da Assembleia Geral — Paula Maria Marchante Jorge Caramelo</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Jantar Aniversário */}
-            <div className="bg-white rounded-xl p-6 border border-gold/30 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="bg-navy text-white rounded-lg p-3 text-center min-w-[70px] shrink-0">
-                  <span className="block text-xs font-medium text-gold">Abr</span>
-                  <span className="block text-2xl font-bold leading-tight">18</span>
-                  <span className="block text-xs">19:30</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gold/20 text-gold-dark">Aniversário</span>
-                  </div>
-                  <h3 className="font-bold text-navy text-lg">Jantar Comemorativo do 76.º Aniversário</h3>
-                  <p className="text-gray-600 text-sm mt-1">
-                    A direção do Alcainça Atlético Clube convida todos os sócios e amigos para o jantar
-                    comemorativo do 76.º aniversário do clube, às 19h30 na Sede do Alcainça Atlético Clube.
-                  </p>
-                  <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
-                    <strong>Marcação obrigatória.</strong> Contacte o clube para reservar o seu lugar.
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Stats */}
       <section className="bg-white border-b">

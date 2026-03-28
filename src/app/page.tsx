@@ -1,6 +1,19 @@
 import Link from "next/link";
+import { getEventosDestaque, getTipoBadgeClass } from "@/lib/eventos";
+
+const MONTHS_PT: Record<string, string> = {
+  "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr",
+  "05": "Mai", "06": "Jun", "07": "Jul", "08": "Ago",
+  "09": "Set", "10": "Out", "11": "Nov", "12": "Dez",
+};
+
+function formatDatePT(iso: string) {
+  const [y, m, d] = iso.split("-");
+  return `${d} ${MONTHS_PT[m]} ${y}`;
+}
 
 export default function Home() {
+  const eventosDestaque = getEventosDestaque(3);
   return (
     <>
       {/* Hero Section */}
@@ -106,45 +119,23 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">Próximos Eventos</h2>
             <p className="text-gray-600">Acompanhe os próximos jogos e eventos do clube</p>
           </div>
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              {
-                date: "29 Mar 2026",
-                title: "Sobreirense vs Alcainça AC",
-                desc: "III Divisão Série 1 - Jornada 9 (Fora)",
-                type: "Futebol",
-              },
-              {
-                date: "30 Mar 2026",
-                title: "Assembleia Geral Ordinária",
-                desc: "Pavilhão do AAC às 21h. Convocatória disponível na página do calendário.",
-                type: "Sócios",
-              },
-              {
-                date: "Dom. 15:30",
-                title: "Baile de Domingo",
-                desc: "Todos os domingos às 15:30 na sede do clube",
-                type: "Baile",
-              },
-              {
-                date: "18 Abr 2026",
-                title: "Jantar 76.º Aniversário",
-                desc: "Jantar comemorativo às 19h30 na sede. Marcação obrigatória.",
-                type: "Evento",
-              },
-            ].map((event, i) => (
+          <div className="grid md:grid-cols-3 gap-6">
+            {eventosDestaque.map((evento) => (
               <div
-                key={i}
+                key={evento.id}
                 className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-navy/10 text-navy">
-                    {event.type}
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getTipoBadgeClass(evento.tipo)}`}>
+                    {evento.tipo}
                   </span>
-                  <span className="text-sm text-gray-500">{event.date}</span>
+                  <span className="text-sm text-gray-500">{formatDatePT(evento.data)}</span>
                 </div>
-                <h3 className="font-bold text-lg text-navy mb-1">{event.title}</h3>
-                <p className="text-gray-600 text-sm">{event.desc}</p>
+                <h3 className="font-bold text-lg text-navy mb-1">{evento.titulo}</h3>
+                <p className="text-gray-600 text-sm">{evento.local} &middot; {evento.hora}</p>
+                {evento.marcacaoObrigatoria && (
+                  <p className="text-amber-700 text-xs mt-2 font-semibold">Marcação obrigatória</p>
+                )}
               </div>
             ))}
           </div>

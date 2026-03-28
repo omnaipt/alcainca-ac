@@ -1,0 +1,24 @@
+[
+  {
+    "id": "assembleia-geral-2026-03-30",
+    "titulo": "Assembleia Geral Ordinária",
+    "data": "2026-03-30",
+    "hora": "21:00",
+    "local": "Pavilhão do Alcainça Atlético Clube",
+    "descricao": "Convocatória para a Assembleia Geral Ordinária. Em primeira convocação às 21h. Se não estiverem presentes dois terços dos sócios, realiza-se em segunda convocação 30 minutos depois.\n\nOrdem dos Trabalhos:\n1. Apreciação, discussão e aprovação do Relatório e Contas do Exercício de 2026 e Parecer do Conselho Fiscal\n2. Plano de Atividades para o ano de 2026\n3. Orçamento para o ano de 2026\n4. Assuntos Diversos\n\nA Presidente da Assembleia Geral — Paula Maria Marchante Jorge Caramelo",
+    "tipo": "Sócios",
+    "marcacaoObrigatoria": false,
+    "destaque": true
+  },
+  {
+    "id": "jantar-76-aniversario-2026-04-18",
+    "titulo": "Jantar Comemorativo do 76.º Aniversário",
+    "data": "2026-04-18",
+    "hora": "19:30",
+    "local": "Sede do Alcainça Atlético Clube",
+    "descricao": "A direção do Alcainça Atlético Clube convida todos os sócios e amigos para o jantar comemorativo do 76.º aniversário do clube.",
+    "tipo": "Aniversário",
+    "marcacaoObrigatoria": true,
+    "destaque": true
+  }
+]
