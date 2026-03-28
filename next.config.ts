@@ -4,15 +4,15 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // events.alcaincaac.pt → admin eventos
+        // eventos.alcaincaac.pt → admin eventos
         {
           source: "/",
-          has: [{ type: "host", value: "events.alcaincaac.pt" }],
+          has: [{ type: "host", value: "eventos.alcaincaac.pt" }],
           destination: "/admin/eventos",
         },
         {
           source: "/:path*",
-          has: [{ type: "host", value: "events.alcaincaac.pt" }],
+          has: [{ type: "host", value: "eventos.alcaincaac.pt" }],
           destination: "/admin/eventos/:path*",
         },
         // caixa.alcaincaac.pt → admin caixa
