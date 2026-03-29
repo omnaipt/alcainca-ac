@@ -2,14 +2,14 @@ import "server-only";
 import { google } from "googleapis";
 
 function getAuth() {
-  const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT || "{}");
-  return new google.auth.GoogleAuth({
-    credentials,
-    scopes: [
-      "https://www.googleapis.com/auth/spreadsheets",
-      "https://www.googleapis.com/auth/drive.file",
-    ],
-  });
+    const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT || "{}");
+    return new google.auth.GoogleAuth({
+          credentials,
+          scopes: [
+                  "https://www.googleapis.com/auth/spreadsheets",
+                  "https://www.googleapis.com/auth/drive.file",
+                ],
+    });
 }
 
 const SHEET_ID = process.env.GOOGLE_SHEET_ID || "";
@@ -17,102 +17,139 @@ const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || "";
 const SHEET_RANGE = "Movimentos!A:J";
 
 export type Movimento = {
-  id: string;
-  data: string;
-  tipo: "Entrada" | "Saída";
-  categoria: string;
-  descricao: string;
-  valor: number;
-  lancadoPor: string;
-  cargo: string;
-  documento: string;
-  dataLancamento: string;
+    id: string;
+    data: string;
+    tipo: "Entrada" | "Saída";
+    categoria: string;
+    descricao: string;
+    valor: number;
+    lancadoPor: string;
+    cargo: string;
+    documento: string;
+    dataLancamento: string;
 };
+
+/** Ensure the "Movimentos" sheet tab exists, create it if not */
+async function ensureMovimentosSheet(): Promise<void> {
+    const auth = getAuth();
+    const sheets = google.sheets({ version: "v4", auth });
+
+  const spreadsheet = await sheets.spreadsheets.get({
+        spreadsheetId: SHEET_ID,
+        fields: "sheets.properties.title",
+  });
+
+  const sheetNames = spreadsheet.data.sheets?.map(s => s.properties?.title) || [];
+
+  if (!sheetNames.includes("Movimentos")) {
+        await sheets.spreadsheets.batchUpdate({
+                spreadsheetId: SHEET_ID,
+                requestBody: {
+                          requests: [
+                            {
+                                          addSheet: {
+                                                          properties: {
+                                                                            title: "Movimentos",
+                                                          },
+                                          },
+                            },
+                                    ],
+                },
+        });
+  }
+}
 
 /** Get all movements from Google Sheet */
 export async function getMovimentos(): Promise<Movimento[]> {
-  const auth = getAuth();
-  const sheets = google.sheets({ version: "v4", auth });
+    const auth = getAuth();
+    const sheets = google.sheets({ version: "v4", auth });
 
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID,
-    range: SHEET_RANGE,
-  });
+  try {
+        const res = await sheets.spreadsheets.values.get({
+                spreadsheetId: SHEET_ID,
+                range: SHEET_RANGE,
+        });
 
-  const rows = res.data.values || [];
-  // Skip header row
-  if (rows.length <= 1) return [];
+      const rows = res.data.values || [];
+        // Skip header row
+      if (rows.length <= 1) return [];
 
-  return rows.slice(1).map((row) => ({
-    id: row[0] || "",
-    data: row[1] || "",
-    tipo: (row[2] as "Entrada" | "Saída") || "Entrada",
-    categoria: row[3] || "",
-    descricao: row[4] || "",
-    valor: parseFloat(row[5]) || 0,
-    lancadoPor: row[6] || "",
-    cargo: row[7] || "",
-    documento: row[8] || "",
-    dataLancamento: row[9] || "",
-  }));
+      return rows.slice(1).map((row) => ({
+              id: row[0] || "",
+              data: row[1] || "",
+              tipo: (row[2] as "Entrada" | "Saída") || "Entrada",
+              categoria: row[3] || "",
+              descricao: row[4] || "",
+              valor: parseFloat(row[5]) || 0,
+              lancadoPor: row[6] || "",
+              cargo: row[7] || "",
+              documento: row[8] || "",
+              dataLancamento: row[9] || "",
+      }));
+  } catch {
+        // If sheet doesn't exist yet, create it and return empty
+      await ensureMovimentosSheet();
+        await initSheet();
+        return [];
+  }
 }
 
 /** Append a new movement to the Google Sheet */
 export async function addMovimento(mov: Movimento): Promise<void> {
-  const auth = getAuth();
-  const sheets = google.sheets({ version: "v4", auth });
+    const auth = getAuth();
+    const sheets = google.sheets({ version: "v4", auth });
 
   await sheets.spreadsheets.values.append({
-    spreadsheetId: SHEET_ID,
-    range: SHEET_RANGE,
-    valueInputOption: "USER_ENTERED",
-    requestBody: {
-      values: [[
-        mov.id,
-        mov.data,
-        mov.tipo,
-        mov.categoria,
-        mov.descricao,
-        mov.valor,
-        mov.lancadoPor,
-        mov.cargo,
-        mov.documento,
-        mov.dataLancamento,
-      ]],
-    },
+        spreadsheetId: SHEET_ID,
+        range: SHEET_RANGE,
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+                values: [[
+                          mov.id,
+                          mov.data,
+                          mov.tipo,
+                          mov.categoria,
+                          mov.descricao,
+                          mov.valor,
+                          mov.lancadoPor,
+                          mov.cargo,
+                          mov.documento,
+                          mov.dataLancamento,
+                        ]],
+        },
   });
 }
 
 /** Upload a file to Google Drive folder */
 export async function uploadToDrive(
-  fileName: string,
-  mimeType: string,
-  fileBuffer: Buffer
-): Promise<string> {
-  const auth = getAuth();
-  const drive = google.drive({ version: "v3", auth });
+    fileName: string,
+    mimeType: string,
+    fileBuffer: Buffer
+  ): Promise<string> {
+    const auth = getAuth();
+    const drive = google.drive({ version: "v3", auth });
 
   const { Readable } = await import("node:stream");
 
   const res = await drive.files.create({
-    requestBody: {
-      name: fileName,
-      parents: [FOLDER_ID],
-    },
-    media: {
-      mimeType,
-      body: Readable.from(fileBuffer),
-    },
-    fields: "id,webViewLink",
+        requestBody: {
+                name: fileName,
+                parents: [FOLDER_ID],
+        },
+        media: {
+                mimeType,
+                body: Readable.from(fileBuffer),
+        },
+        fields: "id,webViewLink",
   });
 
   // Make file viewable by anyone with the link
   await drive.permissions.create({
-    fileId: res.data.id!,
-    requestBody: {
-      role: "reader",
-      type: "anyone",
-    },
+        fileId: res.data.id!,
+        requestBody: {
+                role: "reader",
+                type: "anyone",
+        },
   });
 
   return res.data.webViewLink || `https://drive.google.com/file/d/${res.data.id}/view`;
@@ -120,22 +157,25 @@ export async function uploadToDrive(
 
 /** Initialize the sheet with headers if empty */
 export async function initSheet(): Promise<void> {
+    // Ensure the Movimentos tab exists first
+  await ensureMovimentosSheet();
+
   const auth = getAuth();
-  const sheets = google.sheets({ version: "v4", auth });
+    const sheets = google.sheets({ version: "v4", auth });
 
   const res = await sheets.spreadsheets.values.get({
-    spreadsheetId: SHEET_ID,
-    range: "Movimentos!A1:J1",
+        spreadsheetId: SHEET_ID,
+        range: "Movimentos!A1:J1",
   });
 
   if (!res.data.values || res.data.values.length === 0) {
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: SHEET_ID,
-      range: "Movimentos!A1:J1",
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [["ID", "Data", "Tipo", "Categoria", "Descrição", "Valor", "Lançado por", "Cargo", "Documento", "Data Lançamento"]],
-      },
-    });
+        await sheets.spreadsheets.values.update({
+                spreadsheetId: SHEET_ID,
+                range: "Movimentos!A1:J1",
+                valueInputOption: "USER_ENTERED",
+                requestBody: {
+                          values: [["ID", "Data", "Tipo", "Categoria", "Descrição", "Valor", "Lançado por", "Cargo", "Documento", "Data Lançamento"]],
+                },
+        });
   }
 }
