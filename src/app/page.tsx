@@ -22,7 +22,7 @@ export default function Home() {
         <div className="absolute top-0 right-0 w-2 h-full gradient-gold opacity-60" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-slide-up">
+          <div className="animate-slide-up mt-12 md:mt-16">
             <img
               src="/images/logo.png"
               alt="Alcainça Atlético Clube"

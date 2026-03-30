@@ -158,15 +158,17 @@ export default function Contactos() {
       <section className="bg-card border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <h2 className="font-[var(--font-display)] text-3xl tracking-wider text-foreground text-center mb-8">LOCALIZAÇÃO</h2>
-          <div className="rounded-xl overflow-hidden h-80 bg-secondary border border-border flex items-center justify-center">
-            <div className="text-center">
-              <svg className="w-12 h-12 text-muted-foreground mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <p className="text-foreground font-medium">Alcainça, Mafra</p>
-              <p className="text-sm text-muted-foreground mt-1">Mapa será integrado em breve</p>
-            </div>
+          <div className="rounded-xl overflow-hidden h-96 border border-border">
+            <iframe
+              src="https://maps.google.com/maps?q=38.92,-9.28+(Alcain%C3%A7a+Atl%C3%A9tico+Clube)&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Localização do Alcainça Atlético Clube"
+            />
           </div>
         </div>
       </section>
