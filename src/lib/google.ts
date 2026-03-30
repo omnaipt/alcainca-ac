@@ -1,5 +1,6 @@
 import "server-only";
 import { google } from "googleapis";
+import type { EstadoMovimento, FormaPagamento } from "./caixa-categorias";
 
 function getAuth() {
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT || "{}");
@@ -14,7 +15,7 @@ function getAuth() {
 
 const SHEET_ID = process.env.GOOGLE_SHEET_ID || "";
 const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || "";
-const SHEET_RANGE = "Movimentos!A:J";
+const SHEET_RANGE = "Movimentos!A:M";
 
 export type Movimento = {
     id: string;
@@ -27,6 +28,9 @@ export type Movimento = {
     cargo: string;
     documento: string;
     dataLancamento: string;
+    formaPagamento: FormaPagamento;
+    estado: EstadoMovimento;
+    aprovadoPor: string;
 };
 
 /** Ensure the "Movimentos" sheet tab exists, create it if not */
@@ -85,6 +89,9 @@ export async function getMovimentos(): Promise<Movimento[]> {
               cargo: row[7] || "",
               documento: row[8] || "",
               dataLancamento: row[9] || "",
+              formaPagamento: (row[10] as FormaPagamento) || "Dinheiro",
+              estado: (row[11] as EstadoMovimento) || "Aprovado",
+              aprovadoPor: row[12] || "",
       }));
   } catch {
         // If sheet doesn't exist yet, create it and return empty
@@ -115,9 +122,41 @@ export async function addMovimento(mov: Movimento): Promise<void> {
                           mov.cargo,
                           mov.documento,
                           mov.dataLancamento,
+                          mov.formaPagamento,
+                          mov.estado,
+                          mov.aprovadoPor,
                         ]],
         },
   });
+}
+
+/** Approve a movement by ID — updates estado and aprovadoPor columns */
+export async function aprovarMovimento(movId: string, aprovadoPor: string): Promise<boolean> {
+    const auth = getAuth();
+    const sheets = google.sheets({ version: "v4", auth });
+
+    const res = await sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: SHEET_RANGE,
+    });
+
+    const rows = res.data.values || [];
+    // Find the row index (1-based, +1 for header)
+    const rowIndex = rows.findIndex((row, i) => i > 0 && row[0] === movId);
+    if (rowIndex === -1) return false;
+
+    // Update columns L (estado) and M (aprovadoPor) — row is 1-based in sheets
+    const sheetRow = rowIndex + 1;
+    await sheets.spreadsheets.values.update({
+        spreadsheetId: SHEET_ID,
+        range: `Movimentos!L${sheetRow}:M${sheetRow}`,
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+            values: [["Aprovado", aprovadoPor]],
+        },
+    });
+
+    return true;
 }
 
 /** Upload a file to Google Drive folder */
@@ -163,44 +202,18 @@ export async function initSheet(): Promise<void> {
   const auth = getAuth();
     const sheets = google.sheets({ version: "v4", auth });
 
-  // Check if the "Movimentos" tab exists
-  const spreadsheet = await sheets.spreadsheets.get({
-    spreadsheetId: SHEET_ID,
-  });
-
-  const sheetExists = spreadsheet.data.sheets?.some(
-    (s) => s.properties?.title === "Movimentos"
-  );
-
-  if (!sheetExists) {
-    await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: SHEET_ID,
-      requestBody: {
-        requests: [
-          {
-            addSheet: {
-              properties: {
-                title: "Movimentos",
-              },
-            },
-          },
-        ],
-      },
-    });
-  }
-
   const res = await sheets.spreadsheets.values.get({
         spreadsheetId: SHEET_ID,
-        range: "Movimentos!A1:J1",
+        range: "Movimentos!A1:M1",
   });
 
   if (!res.data.values || res.data.values.length === 0) {
         await sheets.spreadsheets.values.update({
                 spreadsheetId: SHEET_ID,
-                range: "Movimentos!A1:J1",
+                range: "Movimentos!A1:M1",
                 valueInputOption: "USER_ENTERED",
                 requestBody: {
-                          values: [["ID", "Data", "Tipo", "Categoria", "Descrição", "Valor", "Lançado por", "Cargo", "Documento", "Data Lançamento"]],
+                          values: [["ID", "Data", "Tipo", "Categoria", "Descrição", "Valor", "Lançado por", "Cargo", "Documento", "Data Lançamento", "Forma Pagamento", "Estado", "Aprovado por"]],
                 },
         });
   }

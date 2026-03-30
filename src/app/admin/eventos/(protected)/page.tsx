@@ -55,24 +55,24 @@ export default function AdminEventos() {
 
   if (loading) {
     return (
-      <div className="text-center py-20 text-gray-400">A carregar eventos...</div>
+      <div className="text-center py-20 text-muted-foreground">A carregar eventos...</div>
     );
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold text-navy">Eventos</h2>
+        <h2 className="text-2xl font-bold text-foreground">Eventos</h2>
         <Link
           href="/admin/eventos/novo"
-          className="bg-gold text-navy font-semibold px-5 py-2.5 rounded-xl hover:bg-gold-light transition-colors"
+          className="gradient-gold text-background font-semibold px-5 py-2.5 rounded-xl hover:scale-105 transition-transform"
         >
           + Novo Evento
         </Link>
       </div>
 
       {eventos.length === 0 ? (
-        <div className="text-center py-20 text-gray-400 bg-white rounded-xl border">
+        <div className="text-center py-20 text-muted-foreground bg-card rounded-xl border border-border">
           Nenhum evento criado. Crie o primeiro!
         </div>
       ) : (
@@ -82,38 +82,38 @@ export default function AdminEventos() {
             return (
               <div
                 key={evento.id}
-                className={`bg-white rounded-xl p-5 border shadow-sm flex items-center gap-4 ${isPast ? "opacity-50" : ""}`}
+                className={`bg-card rounded-xl p-5 border border-border flex items-center gap-4 hover:border-gold/40 transition-colors ${isPast ? "opacity-50" : ""}`}
               >
-                <div className="bg-navy text-white rounded-lg p-2.5 text-center min-w-[60px] shrink-0">
-                  <span className="block text-xs text-gold">{evento.data.slice(5, 7)}/{evento.data.slice(8, 10)}</span>
-                  <span className="block text-sm font-bold">{evento.hora}</span>
+                <div className="gradient-gold rounded-lg p-2.5 text-center min-w-[60px] shrink-0">
+                  <span className="block text-xs text-background">{evento.data.slice(5, 7)}/{evento.data.slice(8, 10)}</span>
+                  <span className="block text-sm font-bold text-background">{evento.hora}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-navy/10 text-navy">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold/10 text-gold">
                       {evento.tipo}
                     </span>
                     {isPast && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Passado</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Passado</span>
                     )}
                     {evento.destaque && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gold/20 text-gold-dark">Destaque</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gold/20 text-gold">Destaque</span>
                     )}
                   </div>
-                  <h3 className="font-bold text-navy truncate">{evento.titulo}</h3>
-                  <p className="text-sm text-gray-500 truncate">{evento.local}</p>
+                  <h3 className="font-bold text-foreground truncate">{evento.titulo}</h3>
+                  <p className="text-sm text-muted-foreground truncate">{evento.local}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <Link
                     href={`/admin/eventos/${evento.id}`}
-                    className="text-sm text-navy hover:text-gold transition-colors font-medium px-3 py-1.5 rounded-lg hover:bg-gray-50"
+                    className="text-sm text-gold hover:text-gold-light transition-colors font-medium px-3 py-1.5 rounded-lg hover:bg-gold/10"
                   >
                     Editar
                   </Link>
                   <button
                     onClick={() => handleDelete(evento.id, evento.titulo)}
                     disabled={deleting === evento.id}
-                    className="text-sm text-red-600 hover:text-red-800 transition-colors font-medium px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                    className="text-sm text-accent hover:text-red-400 transition-colors font-medium px-3 py-1.5 rounded-lg hover:bg-accent/10 disabled:opacity-50"
                   >
                     {deleting === evento.id ? "..." : "Apagar"}
                   </button>
@@ -124,7 +124,7 @@ export default function AdminEventos() {
         </div>
       )}
 
-      <p className="text-xs text-gray-400 mt-6 text-center">
+      <p className="text-xs text-muted-foreground mt-6 text-center">
         Após criar ou editar um evento, o site atualiza automaticamente em ~60 segundos.
       </p>
     </div>

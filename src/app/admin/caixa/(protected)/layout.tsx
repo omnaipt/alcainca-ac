@@ -12,18 +12,18 @@ export default async function CaixaProtectedLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-navy text-white shadow-md">
+    <div className="min-h-screen bg-background">
+      <header className="bg-card border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/images/logo.png" alt="AAC" className="h-10 w-auto" />
             <div>
-              <h1 className="font-bold text-lg leading-tight">Caixa do Clube</h1>
-              <p className="text-xs text-gray-300">{user.nome} &middot; {user.cargo}</p>
+              <h1 className="font-bold text-lg leading-tight text-foreground">Caixa do Clube</h1>
+              <p className="text-xs text-muted-foreground">{user.nome} &middot; {user.cargo}</p>
             </div>
           </div>
           <form action="/api/caixa/auth/logout" method="POST">
-            <button type="submit" className="text-sm text-gray-300 hover:text-white transition-colors">
+            <button type="submit" className="text-sm text-muted-foreground hover:text-gold transition-colors">
               Sair
             </button>
           </form>
