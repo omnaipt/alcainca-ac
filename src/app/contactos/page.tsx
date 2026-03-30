@@ -158,17 +158,49 @@ export default function Contactos() {
       <section className="bg-card border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <h2 className="font-[var(--font-display)] text-3xl tracking-wider text-foreground text-center mb-8">LOCALIZAÇÃO</h2>
-          <div className="rounded-xl overflow-hidden h-96 border border-border">
-            <iframe
-              src="https://maps.google.com/maps?q=38.92,-9.28+(Alcain%C3%A7a+Atl%C3%A9tico+Clube)&t=&z=15&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Localização do Alcainça Atlético Clube"
-            />
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Sede */}
+            <div>
+              <h3 className="font-[var(--font-display)] text-lg tracking-wider text-foreground mb-3 flex items-center gap-2">
+                <span className="w-3 h-3 gradient-gold rounded-full inline-block" />
+                SEDE DO CLUBE
+              </h3>
+              <div className="rounded-xl overflow-hidden h-80 border border-border">
+                <iframe
+                  src="https://maps.google.com/maps?q=38.9212806,-9.2924684+(Alcain%C3%A7a+AC+-+Sede)&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Sede do Alcainça Atlético Clube"
+                />
+              </div>
+              <p className="text-muted-foreground text-sm mt-2">Rua da Junta de Freguesia, Alcainça, Mafra</p>
+            </div>
+
+            {/* Campo */}
+            <div>
+              <h3 className="font-[var(--font-display)] text-lg tracking-wider text-foreground mb-3 flex items-center gap-2">
+                <span className="w-3 h-3 gradient-gold rounded-full inline-block" />
+                CAMPO DE JOGOS JOÃO SIMÕES
+              </h3>
+              <div className="rounded-xl overflow-hidden h-80 border border-border">
+                <iframe
+                  src="https://maps.google.com/maps?q=38.9131766,-9.2950506+(Campo+Jo%C3%A3o+Sim%C3%B5es)&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Campo de Jogos João Simões"
+                />
+              </div>
+              <p className="text-muted-foreground text-sm mt-2">Rua do Parque Desportivo, São Miguel de Alcainça</p>
+            </div>
           </div>
         </div>
       </section>
