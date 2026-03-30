@@ -163,6 +163,32 @@ export async function initSheet(): Promise<void> {
   const auth = getAuth();
     const sheets = google.sheets({ version: "v4", auth });
 
+  // Check if the "Movimentos" tab exists
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId: SHEET_ID,
+  });
+
+  const sheetExists = spreadsheet.data.sheets?.some(
+    (s) => s.properties?.title === "Movimentos"
+  );
+
+  if (!sheetExists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SHEET_ID,
+      requestBody: {
+        requests: [
+          {
+            addSheet: {
+              properties: {
+                title: "Movimentos",
+              },
+            },
+          },
+        ],
+      },
+    });
+  }
+
   const res = await sheets.spreadsheets.values.get({
         spreadsheetId: SHEET_ID,
         range: "Movimentos!A1:J1",
