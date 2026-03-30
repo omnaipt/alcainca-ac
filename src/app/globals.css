@@ -1,13 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --color-navy: #1a2744;
+  --color-background: #111827;
+  --color-foreground: #fafafa;
+  --color-card: #1a2234;
+  --color-card-foreground: #fafafa;
+  --color-border: #2a3550;
+  --color-muted: #1e293b;
+  --color-muted-foreground: #8896ab;
+  --color-navy: #1c2d4a;
   --color-navy-light: #2a3d66;
   --color-navy-dark: #0f1a2e;
+  --color-navy-deep: #111827;
   --color-gold: #c5a55a;
   --color-gold-light: #d4bc7a;
   --color-gold-dark: #a88b3d;
+  --color-accent: #dc4545;
+  --color-secondary: #1e3054;
   --font-sans: "Inter", Arial, Helvetica, sans-serif;
+  --font-display: "Bebas Neue", sans-serif;
 }
 
 html {
@@ -16,6 +28,74 @@ html {
 
 body {
   font-family: var(--font-sans);
-  color: #1a1a1a;
-  background: #ffffff;
+  color: var(--color-foreground);
+  background: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Gradient utilities */
+.gradient-gold {
+  background: linear-gradient(135deg, #c5a55a, #d4bc7a);
+}
+
+.gradient-navy {
+  background: linear-gradient(180deg, #1c2d4a, #111827);
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, #151e30 0%, #0f1520 50%, #1a2234 100%);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #c5a55a, #d4bc7a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-gold {
+  box-shadow: 0 0 30px rgba(197, 165, 90, 0.3), 0 0 60px rgba(197, 165, 90, 0.1);
+}
+
+.sport-stripe {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 10px,
+    rgba(28, 45, 74, 0.3) 10px,
+    rgba(28, 45, 74, 0.3) 20px
+  );
+}
+
+/* Animations */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animation-delay-100 { animation-delay: 0.1s; opacity: 0; }
+.animation-delay-200 { animation-delay: 0.2s; opacity: 0; }
+.animation-delay-300 { animation-delay: 0.3s; opacity: 0; }
+.animation-delay-400 { animation-delay: 0.4s; opacity: 0; }
+.animation-delay-500 { animation-delay: 0.5s; opacity: 0; }
+.animation-delay-600 { animation-delay: 0.6s; opacity: 0; }
