@@ -64,8 +64,8 @@ const bailes = [
   { data: "28 Jun 2026", dia: "Domingo" },
 ];
 
-export default function Calendario() {
-  const eventosFuturos = getEventosFuturos();
+export default async function Calendario() {
+  const eventosFuturos = await getEventosFuturos();
   const jogados = jogos.filter((j) => j.resultado);
   const proximos = jogos.filter((j) => !j.resultado);
 

@@ -14,8 +14,8 @@ function formatDatePT(iso: string) {
   return `${d} ${MONTHS_PT[m]}`;
 }
 
-export default function Home() {
-  const eventosDestaque = getEventosDestaque(3);
+export default async function Home() {
+  const eventosDestaque = await getEventosDestaque(3);
   return (
     <>
       {/* Hero Section */}
