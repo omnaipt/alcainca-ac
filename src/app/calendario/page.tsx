@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import jogosData from "@/data/jogos.json";
 import { getEventosFuturos } from "@/lib/eventos";
+import EventoImagem from "@/components/EventoImagem";
 
 export const metadata: Metadata = {
   title: "Calendário",
@@ -111,8 +112,8 @@ export default async function Calendario() {
                 return (
                   <div key={evento.id} className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group">
                     {evento.imagem && (
-                      <div className="w-full flex justify-center bg-black/20 p-4">
-                        <img src={evento.imagem} alt={evento.titulo} className="max-h-72 md:max-h-96 w-auto object-contain rounded-lg group-hover:scale-105 transition-transform duration-500" />
+                      <div className="px-6 pt-6">
+                        <EventoImagem src={evento.imagem} alt={evento.titulo} />
                       </div>
                     )}
                     <div className="p-6">

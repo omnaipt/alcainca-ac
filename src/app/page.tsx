@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { getEventosDestaque, getTipoBadgeClass } from "@/lib/eventos";
+import EventoImagem from "@/components/EventoImagem";
 
 const MONTHS_PT: Record<string, string> = {
   "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr",
@@ -138,8 +139,8 @@ export default async function Home() {
                   className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group"
                 >
                   {evento.imagem && (
-                    <div className="w-full flex justify-center bg-black/20 p-4">
-                      <img src={evento.imagem} alt={evento.titulo} className="max-h-60 md:max-h-72 w-auto object-contain rounded-lg group-hover:scale-105 transition-transform duration-500" />
+                    <div className="px-6 pt-6">
+                      <EventoImagem src={evento.imagem} alt={evento.titulo} />
                     </div>
                   )}
                   <div className="p-6 flex flex-col md:flex-row gap-6">
