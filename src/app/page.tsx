@@ -138,8 +138,8 @@ export default async function Home() {
                   className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group"
                 >
                   {evento.imagem && (
-                    <div className="w-full aspect-[2.5/1] overflow-hidden">
-                      <img src={evento.imagem} alt={evento.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="w-full max-h-44 md:max-h-52 overflow-hidden">
+                      <img src={evento.imagem} alt={evento.titulo} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                     </div>
                   )}
                   <div className="p-6 flex flex-col md:flex-row gap-6">
