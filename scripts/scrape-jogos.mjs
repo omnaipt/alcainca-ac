@@ -56,25 +56,74 @@ function normalizeJornada(raw) {
   return trimmed;
 }
 
+/** Attempt to fetch with retries and different strategies */
+async function fetchWithFallback(url) {
+  const userAgents = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
+  ];
+
+  // Strategy 1: Direct fetch with different User-Agents and delays
+  for (let i = 0; i < userAgents.length; i++) {
+    try {
+      if (i > 0) await new Promise((r) => setTimeout(r, 2000 * i));
+      console.log(`Attempt ${i + 1}: direct fetch...`);
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": userAgents[i],
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+          "Accept-Language": "pt-PT,pt;q=0.9,en-US;q=0.5,en;q=0.3",
+          "Accept-Encoding": "gzip, deflate, br",
+          "DNT": "1",
+          "Connection": "keep-alive",
+          "Upgrade-Insecure-Requests": "1",
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-Site": "none",
+          "Sec-Fetch-User": "?1",
+          "Cache-Control": "max-age=0",
+        },
+        redirect: "follow",
+      });
+      if (res.ok) {
+        const buf = await res.arrayBuffer();
+        return new TextDecoder("windows-1252").decode(buf);
+      }
+      console.log(`Attempt ${i + 1} failed: HTTP ${res.status}`);
+    } catch (err) {
+      console.log(`Attempt ${i + 1} failed: ${err.message}`);
+    }
+  }
+
+  // Strategy 2: Try Google webcache
+  try {
+    console.log("Attempting Google webcache...");
+    const cacheUrl = `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`;
+    const res = await fetch(cacheUrl, {
+      headers: {
+        "User-Agent": userAgents[0],
+        "Accept": "text/html",
+      },
+    });
+    if (res.ok) {
+      console.log("Google webcache succeeded");
+      return await res.text();
+    }
+    console.log(`Google webcache failed: HTTP ${res.status}`);
+  } catch (err) {
+    console.log(`Google webcache failed: ${err.message}`);
+  }
+
+  return null;
+}
+
 async function main() {
   console.log(`Fetching: ${SCRAPE_URL}`);
 
-  let html;
-  try {
-    const res = await fetch(SCRAPE_URL, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.5",
-      },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    // zerozero.pt serves Windows-1252 despite HTML meta saying utf-8
-    const buf = await res.arrayBuffer();
-    html = new TextDecoder("windows-1252").decode(buf);
-  } catch (err) {
-    console.error("Fetch failed:", err.message);
+  const html = await fetchWithFallback(SCRAPE_URL);
+  if (!html) {
+    console.error("All fetch strategies failed — aborting");
     process.exit(1);
   }
 
