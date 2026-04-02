@@ -25,27 +25,39 @@ async function getGitHubFile() {
 
 async function commitGitHubFile(eventos: Evento[], sha: string, message: string) {
   const content = Buffer.from(JSON.stringify(eventos, null, 2) + "\n").toString("base64");
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-      body: JSON.stringify({
-        message,
-        content,
-        sha,
-        branch: BRANCH,
-      }),
+
+  // Try up to 3 times in case of SHA conflict (e.g. image upload created a commit)
+  let currentSha = sha;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+        body: JSON.stringify({
+          message,
+          content,
+          sha: currentSha,
+          branch: BRANCH,
+        }),
+      }
+    );
+
+    if (res.ok) return res.json();
+
+    // On conflict, re-fetch the current SHA and retry
+    if ((res.status === 409 || res.status === 422) && attempt < 2) {
+      const fresh = await getGitHubFile();
+      currentSha = fresh.sha;
+      continue;
     }
-  );
-  if (!res.ok) {
+
     const err = await res.text();
     throw new Error(`GitHub commit failed: ${res.status} ${err}`);
   }
-  return res.json();
 }
 
 export async function GET() {

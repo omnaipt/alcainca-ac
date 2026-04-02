@@ -19,7 +19,8 @@
     "descricao": "Vem à nossa Festa da Primavera no antigo campo de tiro, teremos muita animação, bons petiscos e bebidas para acompanhar. Vem passar um bom momento de convivio e animação. Trás um amigo, ou dois...",
     "tipo": "Evento",
     "marcacaoObrigatoria": false,
-    "destaque": true
+    "destaque": true,
+    "imagem": "/images/eventos/evento-1775131717568.jpeg"
   },
   {
     "id": "jantar-76-aniversario-2026-04-18",
