@@ -111,8 +111,8 @@ export default async function Calendario() {
                 return (
                   <div key={evento.id} className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group">
                     {evento.imagem && (
-                      <div className="w-full max-h-48 md:max-h-56 overflow-hidden">
-                        <img src={evento.imagem} alt={evento.titulo} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+                      <div className="w-full flex justify-center bg-black/20 p-4">
+                        <img src={evento.imagem} alt={evento.titulo} className="max-h-72 md:max-h-96 w-auto object-contain rounded-lg group-hover:scale-105 transition-transform duration-500" />
                       </div>
                     )}
                     <div className="p-6">
