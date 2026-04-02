@@ -11,6 +11,17 @@
     "destaque": true
   },
   {
+    "id": "festa-da-primavera-2026-04-10",
+    "titulo": "Festa da Primavera",
+    "data": "2026-04-10",
+    "hora": "21:00",
+    "local": "Campo de Jogos do Alcainça Atlético Clube",
+    "descricao": "Vem à nossa Festa da Primavera no antigo campo de tiro, teremos muita animação, bons petiscos e bebidas para acompanhar. Vem passar um bom momento de convivio e animação. Trás um amigo, ou dois...",
+    "tipo": "Evento",
+    "marcacaoObrigatoria": false,
+    "destaque": true
+  },
+  {
     "id": "jantar-76-aniversario-2026-04-18",
     "titulo": "Jantar Comemorativo do 76.º Aniversário",
     "data": "2026-04-18",
