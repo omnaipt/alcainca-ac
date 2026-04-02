@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { verifyEventosSession } from "@/lib/session";
-import { uploadToDrive } from "@/lib/google";
+
+const REPO = "omnaipt/alcainca-ac";
+const BRANCH = "master";
 
 export async function POST(req: Request) {
   const user = await verifyEventosSession();
@@ -14,19 +16,45 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Nenhum ficheiro enviado" }, { status: 400 });
     }
 
+    // Validate file size (max 5MB for GitHub)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: "Imagem demasiado grande (máx 5MB)" }, { status: 400 });
+    }
+
     const buffer = Buffer.from(await file.arrayBuffer());
-    const date = new Date().toISOString().slice(0, 10);
-    const fileName = `evento_${date}_${file.name}`;
+    const base64 = buffer.toString("base64");
 
-    const driveLink = await uploadToDrive(fileName, file.type, buffer);
+    // Generate unique filename
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const timestamp = Date.now();
+    const safeName = `evento-${timestamp}.${ext}`;
+    const filePath = `public/images/eventos/${safeName}`;
 
-    // Convert Drive view link to direct image embed link
-    const fileIdMatch = driveLink.match(/\/d\/([^/]+)/);
-    const directUrl = fileIdMatch
-      ? `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`
-      : driveLink;
+    // Upload to GitHub via API
+    const res = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/${filePath}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+        body: JSON.stringify({
+          message: `Imagem evento: ${safeName}`,
+          content: base64,
+          branch: BRANCH,
+        }),
+      }
+    );
 
-    return NextResponse.json({ url: directUrl });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`GitHub upload failed: ${res.status} ${err}`);
+    }
+
+    // The image will be served at /images/eventos/filename
+    const publicUrl = `/images/eventos/${safeName}`;
+    return NextResponse.json({ url: publicUrl });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
