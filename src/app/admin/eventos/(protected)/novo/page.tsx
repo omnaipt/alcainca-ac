@@ -7,7 +7,32 @@ import Link from "next/link";
 export default function NovoEvento() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagemUrl, setImagemUrl] = useState("");
   const [error, setError] = useState("");
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/eventos/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        setImagemUrl(data.url);
+      } else {
+        setError(data.error || "Erro ao carregar imagem");
+      }
+    } catch {
+      setError("Erro ao carregar imagem");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,7 +41,7 @@ export default function NovoEvento() {
 
     const form = new FormData(e.currentTarget);
     const evento = {
-      id: "", // generated server-side
+      id: "",
       titulo: form.get("titulo") as string,
       data: form.get("data") as string,
       hora: form.get("hora") as string,
@@ -25,6 +50,7 @@ export default function NovoEvento() {
       tipo: form.get("tipo") as string,
       marcacaoObrigatoria: form.get("marcacao") === "on",
       destaque: form.get("destaque") === "on",
+      imagem: imagemUrl || undefined,
     };
 
     try {
@@ -96,6 +122,26 @@ export default function NovoEvento() {
           <textarea name="descricao" rows={4} className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground focus:ring-2 focus:ring-gold focus:border-gold outline-none resize-y placeholder:text-muted-foreground/50" placeholder="Detalhes do evento..." />
         </div>
 
+        {/* Upload imagem */}
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground mb-1">Imagem de divulgação (opcional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/10 file:text-gold hover:file:bg-gold/20"
+          />
+          {uploading && <p className="text-sm text-muted-foreground mt-1">A carregar imagem...</p>}
+          {imagemUrl && (
+            <div className="mt-2">
+              <img src={imagemUrl} alt="Preview" className="w-full max-w-xs rounded-lg border border-border" />
+              <button type="button" onClick={() => setImagemUrl("")} className="text-xs text-accent mt-1 hover:underline">
+                Remover imagem
+              </button>
+            </div>
+          )}
+        </div>
+
         <div className="flex gap-6">
           <label className="flex items-center gap-2 text-sm text-foreground">
             <input type="checkbox" name="marcacao" className="rounded border-border accent-gold" />
@@ -112,7 +158,7 @@ export default function NovoEvento() {
         <div className="flex gap-3 pt-2">
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || uploading}
             className="gradient-gold text-background font-semibold px-6 py-2.5 rounded-xl hover:scale-105 transition-transform disabled:opacity-50"
           >
             {saving ? "A guardar..." : "Criar Evento"}

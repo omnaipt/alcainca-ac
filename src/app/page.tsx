@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { getEventosDestaque, getTipoBadgeClass } from "@/lib/eventos";
 
@@ -133,30 +135,37 @@ export default function Home() {
               return (
                 <div
                   key={evento.id}
-                  className="bg-secondary/50 border border-border rounded-xl p-6 flex flex-col md:flex-row gap-6 hover:border-gold/40 transition-colors group"
+                  className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group"
                 >
-                  <div className="flex-shrink-0 w-20 h-20 gradient-gold rounded-xl flex flex-col items-center justify-center group-hover:scale-105 transition-transform">
-                    <span className="font-[var(--font-display)] text-2xl text-background leading-none">{d}</span>
-                    <span className="text-xs font-bold text-background/80 uppercase">{monthName}</span>
-                  </div>
-                  <div className="flex-1">
-                    <span className="inline-block text-xs font-bold text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-wider mb-2">
-                      {evento.tipo}
-                    </span>
-                    <h3 className="font-[var(--font-display)] text-xl tracking-wide text-foreground mb-2">{evento.titulo}</h3>
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        {evento.local}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        {evento.hora}
-                      </span>
+                  {evento.imagem && (
+                    <div className="w-full aspect-[2.5/1] overflow-hidden">
+                      <img src={evento.imagem} alt={evento.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
-                    {evento.marcacaoObrigatoria && (
-                      <span className="inline-block mt-2 text-xs text-accent font-semibold">Marcação obrigatória</span>
-                    )}
+                  )}
+                  <div className="p-6 flex flex-col md:flex-row gap-6">
+                    <div className="flex-shrink-0 w-20 h-20 gradient-gold rounded-xl flex flex-col items-center justify-center group-hover:scale-105 transition-transform">
+                      <span className="font-[var(--font-display)] text-2xl text-background leading-none">{d}</span>
+                      <span className="text-xs font-bold text-background/80 uppercase">{monthName}</span>
+                    </div>
+                    <div className="flex-1">
+                      <span className="inline-block text-xs font-bold text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                        {evento.tipo}
+                      </span>
+                      <h3 className="font-[var(--font-display)] text-xl tracking-wide text-foreground mb-2">{evento.titulo}</h3>
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                          {evento.local}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          {evento.hora}
+                        </span>
+                      </div>
+                      {evento.marcacaoObrigatoria && (
+                        <span className="inline-block mt-2 text-xs text-accent font-semibold">Marcação obrigatória</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

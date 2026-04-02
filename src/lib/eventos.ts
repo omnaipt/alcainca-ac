@@ -10,6 +10,7 @@ export type Evento = {
   tipo: string; // Sócios, Baile, Evento, Aniversário
   marcacaoObrigatoria: boolean;
   destaque: boolean;
+  imagem?: string; // URL da imagem de divulgação (Google Drive)
 };
 
 const eventos: Evento[] = eventosData;

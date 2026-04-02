@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { Metadata } from "next";
 import jogosData from "@/data/jogos.json";
 import { getEventosFuturos } from "@/lib/eventos";
@@ -107,31 +109,38 @@ export default function Calendario() {
                 const mes = d.toLocaleString("pt-PT", { month: "short" }).replace(".", "").toUpperCase();
                 const dia = d.getDate();
                 return (
-                  <div key={evento.id} className="bg-secondary/50 border border-border rounded-xl p-6 hover:border-gold/40 transition-colors group">
-                    <div className="flex items-start gap-4">
-                      <div className="gradient-gold rounded-lg p-3 text-center min-w-[70px] shrink-0 group-hover:scale-105 transition-transform">
-                        <span className="block text-xs font-bold text-background">{mes}</span>
-                        <span className="block text-2xl font-[var(--font-display)] text-background leading-tight">{dia}</span>
-                        <span className="block text-xs text-background/80">{evento.hora}</span>
+                  <div key={evento.id} className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group">
+                    {evento.imagem && (
+                      <div className="w-full aspect-[2/1] overflow-hidden">
+                        <img src={evento.imagem} alt={evento.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-bold text-gold bg-gold/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                            {evento.tipo}
-                          </span>
+                    )}
+                    <div className="p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="gradient-gold rounded-lg p-3 text-center min-w-[70px] shrink-0 group-hover:scale-105 transition-transform">
+                          <span className="block text-xs font-bold text-background">{mes}</span>
+                          <span className="block text-2xl font-[var(--font-display)] text-background leading-tight">{dia}</span>
+                          <span className="block text-xs text-background/80">{evento.hora}</span>
                         </div>
-                        <h3 className="font-[var(--font-display)] text-lg tracking-wide text-foreground">{evento.titulo}</h3>
-                        <p className="text-muted-foreground text-sm mt-1">{evento.local}</p>
-                        {evento.descricao && (
-                          <div className="mt-3 bg-background rounded-lg p-4 text-sm text-muted-foreground whitespace-pre-line border border-border">
-                            {evento.descricao}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-bold text-gold bg-gold/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                              {evento.tipo}
+                            </span>
                           </div>
-                        )}
-                        {evento.marcacaoObrigatoria && (
-                          <div className="mt-3 p-3 bg-accent/10 rounded-lg border border-accent/30 text-sm text-accent">
-                            <strong>Marcação obrigatória.</strong> Contacte o clube para reservar o seu lugar.
-                          </div>
-                        )}
+                          <h3 className="font-[var(--font-display)] text-lg tracking-wide text-foreground">{evento.titulo}</h3>
+                          <p className="text-muted-foreground text-sm mt-1">{evento.local}</p>
+                          {evento.descricao && (
+                            <div className="mt-3 bg-background rounded-lg p-4 text-sm text-muted-foreground whitespace-pre-line border border-border">
+                              {evento.descricao}
+                            </div>
+                          )}
+                          {evento.marcacaoObrigatoria && (
+                            <div className="mt-3 p-3 bg-accent/10 rounded-lg border border-accent/30 text-sm text-accent">
+                              <strong>Marcação obrigatória.</strong> Contacte o clube para reservar o seu lugar.
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
