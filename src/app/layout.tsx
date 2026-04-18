@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -17,6 +9,7 @@ export const metadata: Metadata = {
   description:
     "Site oficial do Alcainça Atlético Clube. Fundado em 1950, promovendo o desporto em Alcainça, Mafra. Futebol e Patinagem Artística.",
   keywords: ["Alcainça", "Atlético Clube", "futebol", "patinagem artística", "Mafra", "desporto"],
+  icons: { icon: "/assets/crest.png" },
 };
 
 export default function RootLayout({
@@ -25,12 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
-        <Navbar />
-        <main className="flex-1 pt-16">{children}</main>
-        <Footer />
-      </body>
+    <html lang="pt">
+      <body>{children}</body>
     </html>
   );
 }

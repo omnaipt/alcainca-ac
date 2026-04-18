@@ -1,0 +1,60 @@
+{
+  "_meta": {
+    "last_updated": "2026-04-18T00:00:00Z",
+    "source": "fpf-manual-seed",
+    "competition_id": 28127,
+    "season_id": 105,
+    "fixtures_found": 30,
+    "matches_found": 25,
+    "note": "Dados iniciais seedados manualmente a partir de resultados.fpf.pt. O script update-fpf.js reescreve-os semanalmente."
+  },
+  "competition": {
+    "name": "CD III Divisão",
+    "serie": "Série I",
+    "season": "2025/26",
+    "association": "AF Lisboa"
+  },
+  "team": {
+    "name": "Alcainça AC",
+    "short": "Alcainça",
+    "found_in_standings": true,
+    "venue": "Campo João Simões — Alcainça"
+  },
+  "standings": [
+    { "pos": 1, "team": "Venda Pinheiro", "played": 25, "wins": 20, "draws": 3, "losses": 2, "gf": 77, "ga": 21, "points": 63 },
+    { "pos": 2, "team": "Negrais", "played": 25, "wins": 18, "draws": 4, "losses": 3, "gf": 59, "ga": 19, "points": 58 },
+    { "pos": 3, "team": "Igreja Nova", "played": 25, "wins": 18, "draws": 4, "losses": 3, "gf": 73, "ga": 26, "points": 58 },
+    { "pos": 4, "team": "São Pedro", "played": 25, "wins": 17, "draws": 6, "losses": 2, "gf": 57, "ga": 20, "points": 57 },
+    { "pos": 5, "team": "Vilafranquense", "played": 25, "wins": 16, "draws": 6, "losses": 3, "gf": 56, "ga": 19, "points": 54 },
+    { "pos": 6, "team": "Sobreirense", "played": 25, "wins": 12, "draws": 6, "losses": 7, "gf": 60, "ga": 47, "points": 42 },
+    { "pos": 7, "team": "Alcainça", "played": 25, "wins": 12, "draws": 3, "losses": 10, "gf": 46, "ga": 43, "points": 39 },
+    { "pos": 8, "team": "Monte Agraço", "played": 25, "wins": 12, "draws": 2, "losses": 11, "gf": 52, "ga": 53, "points": 38 },
+    { "pos": 9, "team": "Castanheira", "played": 25, "wins": 9, "draws": 2, "losses": 14, "gf": 38, "ga": 50, "points": 29 },
+    { "pos": 10, "team": "Freiria", "played": 25, "wins": 8, "draws": 2, "losses": 15, "gf": 38, "ga": 58, "points": 26 },
+    { "pos": 11, "team": "A Dos Cunhados", "played": 25, "wins": 6, "draws": 3, "losses": 16, "gf": 32, "ga": 53, "points": 21 },
+    { "pos": 12, "team": "Livramento", "played": 25, "wins": 6, "draws": 2, "losses": 17, "gf": 24, "ga": 55, "points": 20 },
+    { "pos": 13, "team": "Arrudense", "played": 25, "wins": 5, "draws": 2, "losses": 18, "gf": 24, "ga": 65, "points": 17 },
+    { "pos": 14, "team": "Aveiras", "played": 25, "wins": 4, "draws": 4, "losses": 17, "gf": 34, "ga": 75, "points": 16 },
+    { "pos": 15, "team": "Alenquer", "played": 25, "wins": 3, "draws": 8, "losses": 14, "gf": 16, "ga": 48, "points": 14 },
+    { "pos": 16, "team": "Pedra", "played": 25, "wins": 3, "draws": 5, "losses": 17, "gf": 29, "ga": 63, "points": 14 }
+  ],
+  "matches": {
+    "played": [],
+    "upcoming": [
+      { "matchId": null, "home": "Alcainça", "away": "Igreja Nova", "homeGoals": null, "awayGoals": null, "date": "19 abr", "venue": "Campo João Simões - Alcainça", "played": false }
+    ]
+  },
+  "stats": {
+    "position": 7,
+    "played": 25,
+    "wins": 12,
+    "draws": 3,
+    "losses": 10,
+    "goals_for": 46,
+    "goals_against": 43,
+    "points": 39,
+    "form": ["V", "D", "V", "V", "D"]
+  },
+  "next_match": { "matchId": null, "home": "Alcainça", "away": "Igreja Nova", "homeGoals": null, "awayGoals": null, "date": "19 abr", "venue": "Campo João Simões - Alcainça", "played": false },
+  "last_match": null
+}

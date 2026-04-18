@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "update": "node scripts/update-fpf.js",
+    "update:debug": "FPF_CLUB_NAME=Alcainça node scripts/update-fpf.js"
   },
   "dependencies": {
     "googleapis": "^171.4.0",

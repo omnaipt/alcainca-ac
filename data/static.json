@@ -1,0 +1,46 @@
+{
+  "_meta": {
+    "note": "Dados editáveis manualmente. Alterações no GitHub = deploy automático na Vercel."
+  },
+  "club": {
+    "name": "Alcainça Atlético Clube",
+    "short": "Alcainça AC",
+    "founded": "1950-04-06",
+    "address": "Campo João Simões — Alcainça, Mafra",
+    "email": "geral@alcaincaac.pt",
+    "phone": "+351 000 000 000",
+    "social": {
+      "facebook": "https://facebook.com/alcaincaac",
+      "instagram": "https://instagram.com/alcaincaac"
+    }
+  },
+  "values": [
+    { "title": "Comunidade", "desc": "O clube vive de Mafra e para Mafra. Cada jogo é um encontro de bairro." },
+    { "title": "Formação", "desc": "Investimos na formação de atletas na patinagem artística, preparando-os para a competição." },
+    { "title": "Excelência", "desc": "Dentro e fora do campo, exigimos o melhor de nós próprios — trabalho, respeito e humildade." }
+  ],
+  "history_timeline": [
+    { "year": "1950", "title": "Fundação", "desc": "A 6 de Abril de 1950, um grupo de mafrenses apaixonados pelo desporto funda o Alcainça AC.", "badge": "Início" },
+    { "year": "Anos 60-70", "title": "Consolidação", "desc": "O clube estabelece-se no panorama desportivo local, competindo nas ligas distritais de Lisboa.", "badge": "Distritais" },
+    { "year": "Anos 80-90", "title": "Crescimento", "desc": "O clube expande as suas instalações e consolida a sua presença no panorama desportivo local.", "badge": "Infra" },
+    { "year": "Anos 2000", "title": "Patinagem Artística", "desc": "Introdução da secção de patinagem artística, que rapidamente se torna uma das mais fortes do distrito.", "badge": "Nova secção" },
+    { "year": "Presente", "title": "76 anos depois", "desc": "Clube multidesportivo de referência em Mafra, com futebol sénior e patinagem artística competitiva.", "badge": "Hoje" }
+  ],
+  "patinagem": {
+    "niveis": [
+      { "nome": "Iniciação A", "idade": "4-6 anos", "desc": "Primeiros passos nos patins — equilíbrio, confiança, alegria." },
+      { "nome": "Iniciação B", "idade": "7-9 anos", "desc": "Desenvolvimento técnico — fundamentos de patinagem artística." },
+      { "nome": "Pré-Competição A", "idade": "9-12 anos", "desc": "Preparação para a competição — técnica e expressão artística." },
+      { "nome": "Pré-Competição B", "idade": "12+ anos", "desc": "Consolidação técnica avançada e entrada em provas regionais." },
+      { "nome": "Competição", "idade": "Todas as idades", "desc": "Provas regionais e nacionais — livres, solo dance, obrigatórios." }
+    ],
+    "horarios": [
+      { "dia": "Segunda", "slots": ["18:00-19:00 Iniciação A", "19:00-20:30 Competição"] },
+      { "dia": "Terça", "slots": ["18:00-19:00 Iniciação B", "19:00-20:30 Pré-Competição"] },
+      { "dia": "Quarta", "slots": ["18:30-20:00 Solo Dance", "20:00-21:30 Treino s/ Patins"] },
+      { "dia": "Quinta", "slots": ["18:00-19:00 Iniciação A", "19:00-20:30 Livres"] },
+      { "dia": "Sexta", "slots": ["18:00-19:30 Pré-Competição", "19:30-21:00 Competição"] },
+      { "dia": "Sábado", "slots": ["10:00-12:00 Treino Geral"] }
+    ]
+  }
+}

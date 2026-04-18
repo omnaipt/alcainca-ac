@@ -1,296 +1,221 @@
-export const dynamic = "force-dynamic";
+"use client";
 
-import type { Metadata } from "next";
-import jogosData from "@/data/jogos.json";
-import { getEventosFuturos } from "@/lib/eventos";
-import EventoImagem from "@/components/EventoImagem";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Footer, Nav } from "@/components/site";
 
-export const metadata: Metadata = {
-  title: "Calendário",
-  description: "Calendário de jogos e competições do Alcainça Atlético Clube - Época 2025/26.",
-};
+const M = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const W = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
-type Jogo = {
-  data: string;
-  casa: string;
-  fora: string;
-  resultado?: string;
-  jornada: string;
-  competicao: string;
-};
-
-const jogos: Jogo[] = jogosData;
-
-function isAlcaincaHome(jogo: Jogo) {
-  return jogo.casa === "Alcainça AC";
-}
-
-function getResultClass(jogo: Jogo) {
-  if (!jogo.resultado || jogo.resultado === "DA") return "";
-  const parts = jogo.resultado.replace(/ \(a\.p\.\)/, "").split("-").map(Number);
-  const golosCasa = parts[0];
-  const golosFora = parts[1];
-  const isHome = isAlcaincaHome(jogo);
-  if (golosCasa === golosFora) return "bg-yellow-500/20 text-yellow-400";
-  if ((isHome && golosCasa > golosFora) || (!isHome && golosFora > golosCasa))
-    return "bg-green-500/20 text-green-400";
-  return "bg-red-500/20 text-red-400";
-}
-
-function getResultLabel(jogo: Jogo) {
-  if (!jogo.resultado || jogo.resultado === "DA") return "";
-  const parts = jogo.resultado.replace(/ \(a\.p\.\)/, "").split("-").map(Number);
-  const golosCasa = parts[0];
-  const golosFora = parts[1];
-  const isHome = isAlcaincaHome(jogo);
-  if (golosCasa === golosFora) return "E";
-  if ((isHome && golosCasa > golosFora) || (!isHome && golosFora > golosCasa))
-    return "V";
-  return "D";
-}
-
-const bailes = [
-  { data: "29 Mar 2026", dia: "Domingo" },
-  { data: "12 Abr 2026", dia: "Domingo" },
-  { data: "19 Abr 2026", dia: "Domingo" },
-  { data: "26 Abr 2026", dia: "Domingo" },
-  { data: "03 Mai 2026", dia: "Domingo" },
-  { data: "10 Mai 2026", dia: "Domingo" },
-  { data: "17 Mai 2026", dia: "Domingo" },
-  { data: "24 Mai 2026", dia: "Domingo" },
-  { data: "31 Mai 2026", dia: "Domingo" },
-  { data: "07 Jun 2026", dia: "Domingo" },
-  { data: "14 Jun 2026", dia: "Domingo" },
-  { data: "21 Jun 2026", dia: "Domingo" },
-  { data: "28 Jun 2026", dia: "Domingo" },
+// Bailes 2026 — programa oficial de acordionistas (Domingos 16:00 na Sede)
+const BAILES = [
+  { date: "2026-05-03", artist: "Trio Clave" },
+  { date: "2026-05-10", artist: "Gina Reis" },
+  { date: "2026-05-17", artist: "Eurico Martins & Cristina" },
+  { date: "2026-05-24", artist: "Paulo Gamito" },
+  { date: "2026-05-31", artist: "João do Carmo" },
+  { date: "2026-06-07", artist: "João de Castro" },
+  { date: "2026-06-14", artist: "Mário Neves" },
+  { date: "2026-06-21", artist: "Hélio Esteves" },
+  { date: "2026-06-28", artist: "Paulo das Vacas" },
+  { date: "2026-07-05", artist: "Tozé Pratas e Dina Teresa" },
+  { date: "2026-07-12", artist: "Gina Reis" },
+  { date: "2026-07-19", artist: "João do Carmo" },
+  { date: "2026-07-26", artist: "Tozé Pratas e Dina Teresa" },
 ];
 
-export default async function Calendario() {
-  const eventosFuturos = await getEventosFuturos();
-  const jogados = jogos.filter((j) => j.resultado);
-  const proximos = jogos.filter((j) => !j.resultado);
+type CalEvent = {
+  d: number;
+  m: string;
+  w: string;
+  h: string;
+  title: string;
+  tag: string;
+  place: string;
+  status: string;
+  sortKey: number;
+};
 
-  const totalJogos = jogados.filter((j) => j.resultado !== "DA").length;
-  let vitorias = 0, empates = 0, derrotas = 0, golosMarcados = 0, golosSofridos = 0;
-  for (const j of jogados) {
-    const label = getResultLabel(j);
-    if (label === "V") vitorias++;
-    else if (label === "E") empates++;
-    else if (label === "D") derrotas++;
-    if (j.resultado && j.resultado !== "DA") {
-      const parts = j.resultado.replace(/ \(a\.p\.\)/, "").split("-").map(Number);
-      const isHome = isAlcaincaHome(j);
-      golosMarcados += isHome ? parts[0] : parts[1];
-      golosSofridos += isHome ? parts[1] : parts[0];
-    }
-  }
+const FIXOS: CalEvent[] = [
+  {
+    d: 19,
+    m: "Abr",
+    w: "Dom",
+    h: "16:00",
+    title: "Alcainça vs. Igreja Nova",
+    tag: "Futebol",
+    place: "Campo João Simões",
+    status: "III Divisão · Série I",
+    sortKey: new Date(2026, 3, 19).getTime(),
+  },
+];
+
+export default function CalendarioPage() {
+  const [filter, setFilter] = useState<string>("todos");
+  const [extraEvents, setExtraEvents] = useState<CalEvent[]>([]);
+  const [loadingExtra, setLoadingExtra] = useState(true);
+
+  const bailesEvents: CalEvent[] = BAILES.map((b) => {
+    const [y, mo, da] = b.date.split("-").map(Number);
+    const dt = new Date(y, mo - 1, da);
+    return {
+      d: da,
+      m: M[mo - 1],
+      w: W[dt.getDay()],
+      h: "16:00",
+      title: `Baile · ${b.artist}`,
+      tag: "Bailes",
+      place: "Sede do clube",
+      status: "Entrada livre",
+      sortKey: dt.getTime(),
+    };
+  });
+
+  // Puxa eventos do admin (same-origin — serve mesmo domínio via /api/eventos)
+  useEffect(() => {
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 4000);
+    fetch("/api/eventos", { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((list: unknown) => {
+        const arr = Array.isArray(list) ? list : (list as { eventos?: unknown[] })?.eventos || [];
+        const mapped: CalEvent[] = (arr as Array<Record<string, unknown>>).map((e) => {
+          const dateStr = (e.date as string) || (e.data as string) || "";
+          const dt = new Date(dateStr);
+          if (isNaN(dt.getTime())) {
+            return null as unknown as CalEvent;
+          }
+          const hora =
+            (e.time as string) ||
+            (e.hora as string) ||
+            (dt.getHours() ? `${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}` : "");
+          return {
+            d: dt.getDate(),
+            m: M[dt.getMonth()],
+            w: W[dt.getDay()],
+            h: hora,
+            title: ((e.title as string) || (e.titulo as string) || "Evento"),
+            tag: ((e.tag as string) || (e.categoria as string) || (e.tipo as string) || "Clube"),
+            place: ((e.place as string) || (e.local as string) || "Sede do clube"),
+            status: ((e.status as string) || (e.estado as string) || ""),
+            sortKey: dt.getTime(),
+          };
+        }).filter(Boolean);
+        setExtraEvents(mapped);
+      })
+      .catch(() => setExtraEvents([]))
+      .finally(() => {
+        setLoadingExtra(false);
+        clearTimeout(timeout);
+      });
+    return () => {
+      ctrl.abort();
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  const allEvents = [...FIXOS, ...bailesEvents, ...extraEvents].sort((a, b) => a.sortKey - b.sortKey);
+  const tags = ["todos", "Futebol", "Patinagem", "Bailes", "Clube"];
+  const filtered = filter === "todos" ? allEvents : allEvents.filter((e) => e.tag === filter);
 
   return (
-    <>
-      <section className="gradient-navy py-16 md:py-24 relative overflow-hidden">
-        <div className="absolute inset-0 sport-stripe opacity-5" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-[var(--font-display)] text-5xl md:text-7xl tracking-wider text-foreground mb-4">
-            CALENDÁRIO <span className="text-gradient-gold">2025/26</span>
-          </h1>
-          <p className="text-muted-foreground text-lg">Futebol, Eventos e Bailes</p>
+    <div className="page">
+      <Nav current="calendario" onDark />
+
+      <section className="page-hero">
+        <div className="container page-hero__inner">
+          <div className="crumbs">
+            <Link href="/">Início</Link>
+            <span>/</span>
+            <span>Calendário</span>
+          </div>
+          <h1>Calendário <span className="gold">& Eventos.</span></h1>
+          <p className="page-hero__sub">Jogos, bailes, eventos do clube. Tudo o que acontece em Alcainça, num só sítio.</p>
         </div>
       </section>
 
-      {/* Eventos Especiais */}
-      {eventosFuturos.length > 0 && (
-        <section className="py-10 bg-card border-b border-border">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-[var(--font-display)] text-2xl tracking-wider text-foreground mb-6 flex items-center gap-2">
-              EVENTOS DO CLUBE
-            </h2>
-            <div className="space-y-4">
-              {eventosFuturos.map((evento) => {
-                const d = new Date(evento.data + "T00:00:00");
-                const mes = d.toLocaleString("pt-PT", { month: "short" }).replace(".", "").toUpperCase();
-                const dia = d.getDate();
-                return (
-                  <div key={evento.id} className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group">
-                    {evento.imagem && (
-                      <div className="px-6 pt-6">
-                        <EventoImagem src={evento.imagem} alt={evento.titulo} />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="gradient-gold rounded-lg p-3 text-center min-w-[70px] shrink-0 group-hover:scale-105 transition-transform">
-                          <span className="block text-xs font-bold text-background">{mes}</span>
-                          <span className="block text-2xl font-[var(--font-display)] text-background leading-tight">{dia}</span>
-                          <span className="block text-xs text-background/80">{evento.hora}</span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-bold text-gold bg-gold/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                              {evento.tipo}
-                            </span>
-                          </div>
-                          <h3 className="font-[var(--font-display)] text-lg tracking-wide text-foreground">{evento.titulo}</h3>
-                          <p className="text-muted-foreground text-sm mt-1">{evento.local}</p>
-                          {evento.descricao && (
-                            <div className="mt-3 bg-background rounded-lg p-4 text-sm text-muted-foreground whitespace-pre-line border border-border">
-                              {evento.descricao}
-                            </div>
-                          )}
-                          {evento.marcacaoObrigatoria && (
-                            <div className="mt-3 p-3 bg-accent/10 rounded-lg border border-accent/30 text-sm text-accent">
-                              <strong>Marcação obrigatória.</strong> Contacte o clube para reservar o seu lugar.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+      {/* Destaque Bailes */}
+      <section className="section" style={{ paddingBottom: 0 }}>
+        <div className="container">
+          <div style={{ padding: "var(--sp-7)", background: "linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-900) 100%)", color: "#fff", borderRadius: "var(--r-lg)", display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "var(--sp-6)", alignItems: "center" }}>
+            <div style={{ width: 88, height: 88, borderRadius: "50%", background: "var(--c-accent)", color: "var(--c-primary-900)", display: "grid", placeItems: "center", fontFamily: "var(--f-display)", fontSize: 36, lineHeight: 1 }}>🪗</div>
+            <div>
+              <div className="eyebrow" style={{ color: "var(--c-accent)" }}>Todos os domingos · 16:00</div>
+              <h2 className="h-xl" style={{ color: "#fff", marginTop: "var(--sp-3)" }}>Bailes na Sede.</h2>
+              <p style={{ color: "rgba(255,255,255,0.75)", marginTop: "var(--sp-3)", maxWidth: "55ch", lineHeight: 1.6 }}>
+                O baile de domingo é tradição em Alcainça. Acordeonistas convidados semana a semana, sempre às 16h na sede do clube. Entrada livre.
+              </p>
             </div>
-          </div>
-        </section>
-      )}
-
-      {/* Stats */}
-      <section className="bg-background border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-            <div className="bg-card border border-border rounded-xl p-4">
-              <span className="block text-2xl font-[var(--font-display)] text-foreground">{totalJogos}</span>
-              <span className="text-sm text-muted-foreground">Jogos</span>
-            </div>
-            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
-              <span className="block text-2xl font-[var(--font-display)] text-green-400">{vitorias}</span>
-              <span className="text-sm text-muted-foreground">Vitórias</span>
-            </div>
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
-              <span className="block text-2xl font-[var(--font-display)] text-yellow-400">{empates}</span>
-              <span className="text-sm text-muted-foreground">Empates</span>
-            </div>
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-              <span className="block text-2xl font-[var(--font-display)] text-red-400">{derrotas}</span>
-              <span className="text-sm text-muted-foreground">Derrotas</span>
-            </div>
-            <div className="bg-gold/10 border border-gold/30 rounded-xl p-4 col-span-2 md:col-span-1">
-              <span className="block text-2xl font-[var(--font-display)] text-gold">{golosMarcados}-{golosSofridos}</span>
-              <span className="text-sm text-muted-foreground">Golos M/S</span>
+            <div style={{ textAlign: "right", fontFamily: "var(--f-display)", fontSize: 56, color: "var(--c-accent)", lineHeight: 1 }}>
+              {BAILES.length}
+              <div style={{ fontSize: 11, fontFamily: "var(--f-mono)", letterSpacing: "0.12em", color: "rgba(255,255,255,0.65)", marginTop: 6 }}>BAILES AGENDADOS</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Próximos jogos */}
-      {proximos.length > 0 && (
-        <section className="py-12 bg-card">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-[var(--font-display)] text-2xl tracking-wider text-foreground mb-6 flex items-center gap-2">
-              <span className="w-3 h-3 gradient-gold rounded-full animate-pulse" />
-              PRÓXIMOS JOGOS
-            </h2>
-            <div className="space-y-3">
-              {proximos.map((jogo, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl border border-border hover:border-gold/40 transition-colors"
-                >
-                  <div className="text-center min-w-[80px]">
-                    <span className="block text-xs text-muted-foreground">{jogo.jornada}</span>
-                    <span className="block text-sm font-bold text-foreground">{jogo.data}</span>
-                  </div>
-                  <div className="flex-1 flex items-center justify-center gap-2 text-sm md:text-base">
-                    <span className={`text-right flex-1 ${isAlcaincaHome(jogo) ? "font-bold text-gold" : "text-muted-foreground"}`}>
-                      {jogo.casa}
-                    </span>
-                    <span className="px-3 py-1 bg-background rounded text-xs font-bold text-muted-foreground">VS</span>
-                    <span className={`text-left flex-1 ${!isAlcaincaHome(jogo) ? "font-bold text-gold" : "text-muted-foreground"}`}>
-                      {jogo.fora}
-                    </span>
-                  </div>
-                  <div className="min-w-[50px] text-center">
-                    <span className="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold font-medium">
-                      {isAlcaincaHome(jogo) ? "Casa" : "Fora"}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Resultados */}
-      <section className="py-12 bg-background">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-[var(--font-display)] text-2xl tracking-wider text-foreground mb-6">RESULTADOS</h2>
-          <div className="space-y-2">
-            {[...jogados].reverse().map((jogo, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 p-3 md:p-4 rounded-xl hover:bg-card transition-colors border border-border"
+      <section className="section">
+        <div className="container">
+          <div style={{ display: "flex", gap: "var(--sp-3)", marginBottom: "var(--sp-6)", flexWrap: "wrap", alignItems: "center" }}>
+            {tags.map((t) => (
+              <button
+                key={t}
+                onClick={() => setFilter(t)}
+                style={{
+                  padding: "10px 20px",
+                  background: filter === t ? "var(--c-primary)" : "transparent",
+                  color: filter === t ? "#fff" : "var(--c-ink)",
+                  border: `1px solid ${filter === t ? "var(--c-primary)" : "var(--c-line)"}`,
+                  borderRadius: 999,
+                  fontFamily: "var(--f-body)",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
               >
-                <div className="text-center min-w-[70px] hidden md:block">
-                  <span className="block text-xs text-muted-foreground">{jogo.jornada}</span>
-                  <span className="block text-xs text-muted-foreground">{jogo.data}</span>
+                {t}
+              </button>
+            ))}
+            {loadingExtra && (
+              <span style={{ fontSize: 11, color: "var(--c-ink-soft)", fontFamily: "var(--f-mono)", letterSpacing: "0.12em" }}>
+                a carregar admin…
+              </span>
+            )}
+          </div>
+          <div className="cal-list">
+            {filtered.map((e, i) => (
+              <div key={i} className="cal-row">
+                <div className="cal-row__date">
+                  <div className="d">{e.d}</div>
+                  <div className="m">{e.m}</div>
                 </div>
-                <div className="flex-1 flex items-center justify-center gap-2 text-sm md:text-base">
-                  <span className={`text-right flex-1 ${isAlcaincaHome(jogo) ? "font-bold text-gold" : "text-muted-foreground"}`}>
-                    {jogo.casa}
-                  </span>
-                  <span className={`px-2 py-1 rounded text-sm font-bold min-w-[60px] text-center ${jogo.resultado === "DA" ? "bg-card text-muted-foreground" : getResultClass(jogo)}`}>
-                    {jogo.resultado}
-                  </span>
-                  <span className={`text-left flex-1 ${!isAlcaincaHome(jogo) ? "font-bold text-gold" : "text-muted-foreground"}`}>
-                    {jogo.fora}
-                  </span>
+                <div className="cal-row__body">
+                  <h4>{e.title}</h4>
+                  <div className="cal-row__meta">
+                    <span>{e.w} · {e.h}</span>
+                    <span>· {e.place}</span>
+                    {e.status && <span>· {e.status}</span>}
+                  </div>
                 </div>
-                <div className="min-w-[28px] text-center hidden md:block">
-                  {jogo.resultado !== "DA" && (
-                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${getResultClass(jogo)}`}>
-                      {getResultLabel(jogo)}
-                    </span>
-                  )}
-                </div>
+                <span className={`cal-row__tag ${e.tag === "Clube" || e.tag === "Bailes" ? "cal-row__tag--muted" : ""}`}>{e.tag}</span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-4 text-center">
-            Fonte: zerozero.pt &middot; AF Lisboa III Divisão Série 1 &middot; Época 2025/26
-          </p>
+          <div style={{ marginTop: "var(--sp-7)", padding: "var(--sp-5)", background: "var(--c-bg-alt)", border: "1px dashed var(--c-line)", borderRadius: "var(--r-lg)", fontSize: 13, color: "var(--c-ink-soft)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "var(--sp-4)", flexWrap: "wrap" }}>
+            <span>
+              <strong style={{ color: "var(--c-ink)" }}>Admin de eventos:</strong> os eventos criados em eventos.alcaincaac.pt aparecem aqui automaticamente.
+            </span>
+            <a href="https://eventos.alcaincaac.pt/admin/eventos/login" target="_blank" rel="noopener" style={{ fontFamily: "var(--f-mono)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--c-primary)", fontWeight: 600, textDecoration: "none" }}>
+              Abrir painel →
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* Bailes */}
-      <section className="py-12 bg-card border-t border-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-[var(--font-display)] text-2xl tracking-wider text-foreground mb-2">
-            BAILE DE DOMINGO
-          </h2>
-          <p className="text-muted-foreground mb-6">
-            Todos os domingos às <strong className="text-foreground">15:30</strong> na sede do clube (excepto Domingo de Páscoa)
-          </p>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {bailes.map((baile, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl border border-border hover:border-gold/40 transition-colors"
-              >
-                <div className="w-12 h-12 gradient-gold rounded-lg flex items-center justify-center shrink-0">
-                  <span className="text-lg">💃</span>
-                </div>
-                <div>
-                  <span className="block font-bold text-foreground text-sm">{baile.data}</span>
-                  <span className="block text-xs text-muted-foreground">{baile.dia} &middot; 15:30</span>
-                  <span className="block text-xs text-muted-foreground">Sede do Alcainça AC</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 p-3 bg-accent/10 rounded-lg border border-accent/30 text-sm text-accent">
-            <strong>Nota:</strong> Não há baile no Domingo de Páscoa (5 de Abril de 2026).
-          </div>
-        </div>
-      </section>
-    </>
+      <Footer />
+    </div>
   );
 }

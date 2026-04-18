@@ -1,257 +1,263 @@
-export const dynamic = "force-dynamic";
+"use client";
 
 import Link from "next/link";
-import { getEventosDestaque, getTipoBadgeClass } from "@/lib/eventos";
-import EventoImagem from "@/components/EventoImagem";
+import { Crest, Footer, HeroBg, Nav, useClubData, useCountdown, useParsedFpfDate } from "@/components/site";
 
-const MONTHS_PT: Record<string, string> = {
-  "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr",
-  "05": "Mai", "06": "Jun", "07": "Jul", "08": "Ago",
-  "09": "Set", "10": "Out", "11": "Nov", "12": "Dez",
-};
+export default function HomePage() {
+  const clubData = useClubData();
+  const fpf = clubData.fpf;
+  const nextFpf = fpf?.next_match;
 
-function formatDatePT(iso: string) {
-  const [, m, d] = iso.split("-");
-  return `${d} ${MONTHS_PT[m]}`;
-}
+  const parsed = useParsedFpfDate(nextFpf?.date);
+  const fallbackTarget = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    d.setHours(16, 0, 0, 0);
+    return d;
+  })();
+  const matchDate = parsed || fallbackTarget;
+  const cd = useCountdown(matchDate.getTime());
 
-export default async function Home() {
-  const eventosDestaque = await getEventosDestaque(3);
+  const nextHome = nextFpf?.home || "Sobreirense";
+  const nextAway = nextFpf?.away || "Alcainça";
+  const isAway = nextFpf ? !/alcain/i.test(nextHome) : true;
+  const compLabel = fpf?.competition?.name
+    ? `${fpf.competition.name}${fpf.competition.serie ? " · " + fpf.competition.serie : ""}`
+    : "III Divisão Série 1";
+
+  const news = [
+    { tag: "Clube", date: "Mar 2026", title: "Novo site do Alcainça AC", excerpt: "Apresentamos a nova presença digital do clube — mais rápida, clara e próxima dos adeptos." },
+    { tag: "Futebol", date: "Abr 2026", title: "Sénior cimenta posição no meio da tabela", excerpt: "Vitória tangencial em casa e segunda jornada consecutiva sem sofrer golos." },
+    { tag: "Patinagem", date: "Abr 2026", title: "Atletas brilham em prova regional", excerpt: "Três pódios e uma classificação inédita para as mais jovens. Parabéns a todas!" },
+  ];
+
+  const newsBg: Record<string, string> = {
+    Clube: "linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-900) 60%, #0b1a3d 100%)",
+    Futebol: "linear-gradient(135deg, #0d3d7c 0%, #1a5bb8 50%, #2a6fd0 100%)",
+    Patinagem: "linear-gradient(135deg, #5a1a6b 0%, #8b2fa8 50%, #c14dd6 100%)",
+  };
+
   return (
-    <>
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden -mt-16">
-        <div className="absolute inset-0 gradient-hero" />
-        <div className="absolute top-0 right-0 w-2 h-full gradient-gold opacity-60" />
+    <div className="page">
+      <Nav current="home" onDark />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-slide-up mt-12 md:mt-16">
-            <img
-              src="/images/logo.png"
-              alt="Alcainça Atlético Clube"
-              className="w-28 h-32 md:w-36 md:h-40 object-contain mx-auto mb-6 drop-shadow-2xl"
-            />
-          </div>
-          <h1 className="font-[var(--font-display)] text-6xl md:text-8xl lg:text-9xl tracking-wider text-foreground leading-none mb-4 animate-slide-up animation-delay-200">
-            ALCAINÇA
-            <br />
-            <span className="text-gradient-gold">ATLÉTICO CLUBE</span>
-          </h1>
-          <p className="font-[var(--font-display)] text-gold text-2xl md:text-3xl tracking-widest mb-4 animate-slide-up animation-delay-400">
-            DESDE 6 DE ABRIL DE 1950
-          </p>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10 animate-slide-up animation-delay-500">
-            76 anos ao serviço do desporto e da comunidade de Alcainça
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up animation-delay-600">
-            <Link
-              href="/historia"
-              className="gradient-gold text-background font-bold px-8 py-4 rounded-lg text-lg tracking-wide hover:scale-105 transition-transform duration-200 uppercase"
-            >
-              Conhecer o Clube
-            </Link>
-            <Link
-              href="/contactos"
-              className="border-2 border-gold text-gold font-bold px-8 py-4 rounded-lg text-lg tracking-wide hover:bg-gold hover:text-background transition-all duration-200 uppercase"
-            >
-              Contacte-nos
-            </Link>
+      <section className="hero" data-layout="mosaic">
+        <HeroBg />
+        <div className="container hero__content">
+          <div className="hero__grid">
+            <div>
+              <div className="eyebrow hero__eyebrow">Desde 1950</div>
+              <h1 className="hero__title h-display">
+                O clube<br />
+                <span className="gold">da nossa</span><br />
+                terra.
+              </h1>
+              <p className="hero__sub">
+                76 anos de paixão, suor e pertença. Futebol e patinagem artística com as cores que nos unem.
+              </p>
+              <div className="hero__ctas">
+                <Link className="btn btn--primary" href="/contactos">
+                  Junta-te ao Clube <span className="btn__arrow">→</span>
+                </Link>
+                <Link className="btn btn--ghost" href="/historia">
+                  Ver a História
+                </Link>
+              </div>
+            </div>
+            <div className="hero__side">
+              <div className="hero__mini-card">
+                <div className="eyebrow">Próximo Jogo {nextFpf?.date ? "· " + nextFpf.date : ""}</div>
+                <h4>{nextHome} vs. {nextAway}</h4>
+                <p>{compLabel} · {isAway ? "Fora" : "Casa"}</p>
+                <div className="match__countdown" style={{ marginTop: "var(--sp-4)" }}>
+                  <div className="match__cd-cell"><div className="match__cd-v">{String(cd.d).padStart(2, "0")}</div><div className="match__cd-k">Dias</div></div>
+                  <div className="match__cd-cell"><div className="match__cd-v">{String(cd.h).padStart(2, "0")}</div><div className="match__cd-k">Hrs</div></div>
+                  <div className="match__cd-cell"><div className="match__cd-v">{String(cd.m).padStart(2, "0")}</div><div className="match__cd-k">Min</div></div>
+                </div>
+              </div>
+              <div className="hero__mini-card">
+                <div className="eyebrow">Comunidade</div>
+                <h4>320+ atletas &amp; sócios</h4>
+                <p>Da iniciação ao sénior. Clube familiar, aberto e com alma.</p>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Bottom diagonal cut */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-background" style={{ clipPath: "polygon(0 100%, 100% 0, 100% 100%)" }} />
+        <div className="hero__meta">
+          <div className="hero__meta-inner">
+            <div className="hero__meta-item">
+              <div className="hero__meta-k">Fundação</div>
+              <div className="hero__meta-v">06 · 04 · <span className="gold">1950</span></div>
+            </div>
+            <div className="hero__meta-item">
+              <div className="hero__meta-k">Modalidades</div>
+              <div className="hero__meta-v">Futebol · Patinagem</div>
+            </div>
+            <div className="hero__meta-item">
+              <div className="hero__meta-k">Competição</div>
+              <div className="hero__meta-v">III Div · <span className="gold">Série 1</span></div>
+            </div>
+            <div className="hero__meta-item">
+              <div className="hero__meta-k">Época</div>
+              <div className="hero__meta-v">2025<span className="gold">/</span>26</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Modalidades */}
-      <section className="py-24 bg-background">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-[var(--font-display)] text-5xl md:text-7xl tracking-wider text-foreground mb-4">
-              AS NOSSAS <span className="text-gradient-gold">MODALIDADES</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-              Duas modalidades que representam a paixão e dedicação do nosso clube
+      <section className="section">
+        <div className="container">
+          <div className="section__head">
+            <div>
+              <div className="eyebrow">As nossas modalidades</div>
+              <h2 className="h-xl">Duas modalidades,<br />uma só família.</h2>
+            </div>
+            <p className="section__intro">
+              Do relvado ao ringue, cada secção do Alcainça AC partilha a mesma ambição: formar atletas e formar pessoas.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Futebol */}
-            <Link href="/modalidades/futebol" className="group">
-              <div className="relative bg-gradient-to-br from-secondary to-navy rounded-2xl p-8 border border-border overflow-hidden hover:border-gold/50 transition-all duration-300">
-                <div className="absolute inset-0 sport-stripe opacity-10 group-hover:opacity-20 transition-opacity" />
-                <div className="relative z-10">
-                  <div className="w-16 h-16 rounded-xl gradient-gold flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-3xl">⚽</span>
-                  </div>
-                  <h3 className="font-[var(--font-display)] text-3xl tracking-wider text-foreground mb-3">FUTEBOL</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-6">
-                    A modalidade rainha do clube. A equipa sénior compete na III Divisão da AF Lisboa com garra e determinação.
-                  </p>
-                  <span className="inline-flex items-center gap-2 text-gold font-semibold hover:gap-3 transition-all duration-200 uppercase text-sm tracking-wide">
-                    Saber mais <span>&rarr;</span>
-                  </span>
+          <div className="mods">
+            <Link href="/futebol" className="mod-card">
+              <div className="mod-card__bg" />
+              <div>
+                <div className="mod-card__num">01 / Modalidade</div>
+                <h3 className="mod-card__title">Futebol</h3>
+                <p className="mod-card__desc">
+                  A modalidade rainha do clube. Equipa sénior na III Divisão Série 1 da AF Lisboa, desde 1950.
+                </p>
+              </div>
+              <div className="mod-card__footer">
+                <div className="mod-card__meta">
+                  <b>III Divisão · Série 1</b>
+                  Equipa sénior · Época 2025/26
                 </div>
+                <div className="mod-card__arrow">→</div>
               </div>
             </Link>
-
-            {/* Patinagem */}
-            <Link href="/modalidades/patinagem" className="group">
-              <div className="relative bg-gradient-to-br from-gold/20 to-secondary rounded-2xl p-8 border border-border overflow-hidden hover:border-gold/50 transition-all duration-300">
-                <div className="absolute inset-0 sport-stripe opacity-10 group-hover:opacity-20 transition-opacity" />
-                <div className="relative z-10">
-                  <div className="w-16 h-16 rounded-xl gradient-gold flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-3xl">🛼</span>
-                  </div>
-                  <h3 className="font-[var(--font-display)] text-3xl tracking-wider text-foreground mb-3">PATINAGEM ARTÍSTICA</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-6">
-                    Elegância e técnica em cada apresentação. A nossa secção forma atletas de excelência com paixão pelo desporto.
-                  </p>
-                  <span className="inline-flex items-center gap-2 text-gold font-semibold hover:gap-3 transition-all duration-200 uppercase text-sm tracking-wide">
-                    Saber mais <span>&rarr;</span>
-                  </span>
+            <Link href="/patinagem" className="mod-card mod-card--patinagem">
+              <div className="mod-card__bg" />
+              <div>
+                <div className="mod-card__num">02 / Modalidade</div>
+                <h3 className="mod-card__title">Patinagem<br />Artística</h3>
+                <p className="mod-card__desc">
+                  Elegância e técnica em cada apresentação. Formamos atletas de excelência, com paixão pelo desporto.
+                </p>
+              </div>
+              <div className="mod-card__footer">
+                <div className="mod-card__meta">
+                  <b>Federação Portuguesa de Patinagem</b>
+                  Escola · Competição · Galas
                 </div>
+                <div className="mod-card__arrow">→</div>
               </div>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Próximos Eventos */}
-      <section className="py-24 bg-card relative">
-        <div className="absolute top-0 left-0 right-0 h-16 bg-background" style={{ clipPath: "polygon(0 0, 100% 0, 0 100%)" }} />
-
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-          <div className="text-center mb-16">
-            <h2 className="font-[var(--font-display)] text-5xl md:text-7xl tracking-wider text-foreground mb-4">
-              PRÓXIMOS <span className="text-gradient-gold">EVENTOS</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Acompanhe os próximos jogos e eventos do clube
+      {/* Próximo jogo detalhado */}
+      <section className="section section--alt">
+        <div className="container">
+          <div className="section__head">
+            <div>
+              <div className="eyebrow">Matchday</div>
+              <h2 className="h-xl">Próximo jogo.</h2>
+            </div>
+            <p className="section__intro">
+              Aparece. Faz parte. O Alcainça joga em casa e precisa de ti na bancada.
             </p>
           </div>
-          <div className="space-y-6">
-            {eventosDestaque.map((evento) => {
-              const [, m, d] = evento.data.split("-");
-              const monthName = MONTHS_PT[m]?.toUpperCase() || "";
-              return (
-                <div
-                  key={evento.id}
-                  className="bg-secondary/50 border border-border rounded-xl overflow-hidden hover:border-gold/40 transition-colors group"
-                >
-                  {evento.imagem && (
-                    <div className="px-6 pt-6">
-                      <EventoImagem src={evento.imagem} alt={evento.titulo} />
-                    </div>
-                  )}
-                  <div className="p-6 flex flex-col md:flex-row gap-6">
-                    <div className="flex-shrink-0 w-20 h-20 gradient-gold rounded-xl flex flex-col items-center justify-center group-hover:scale-105 transition-transform">
-                      <span className="font-[var(--font-display)] text-2xl text-background leading-none">{d}</span>
-                      <span className="text-xs font-bold text-background/80 uppercase">{monthName}</span>
-                    </div>
-                    <div className="flex-1">
-                      <span className="inline-block text-xs font-bold text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-wider mb-2">
-                        {evento.tipo}
-                      </span>
-                      <h3 className="font-[var(--font-display)] text-xl tracking-wide text-foreground mb-2">{evento.titulo}</h3>
-                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                          {evento.local}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                          {evento.hora}
-                        </span>
-                      </div>
-                      {evento.marcacaoObrigatoria && (
-                        <span className="inline-block mt-2 text-xs text-accent font-semibold">Marcação obrigatória</span>
-                      )}
-                    </div>
-                  </div>
+          <div className="match">
+            <div className="match__head">
+              <span>{compLabel}</span>
+              <span className="match__live"><span /> Em {cd.d} dias</span>
+            </div>
+            <div className="match__body">
+              <div className="match__team match__team--home">
+                <div className="match__crest">{isAway ? nextHome.slice(0, 3).toUpperCase() : <Crest size={56} />}</div>
+                <div>
+                  <div className="match__team-name">{isAway ? nextHome : "Alcainça AC"}</div>
+                  <div className="match__team-sub">Casa</div>
                 </div>
-              );
-            })}
-          </div>
-          <div className="text-center mt-10">
-            <Link
-              href="/calendario"
-              className="inline-flex items-center gap-2 text-gold font-semibold hover:gap-3 transition-all uppercase tracking-wide"
-            >
-              Ver calendário completo &rarr;
-            </Link>
+              </div>
+              <div className="match__vs">
+                <div className="match__countdown">
+                  <div className="match__cd-cell"><div className="match__cd-v">{String(cd.d).padStart(2, "0")}</div><div className="match__cd-k">Dias</div></div>
+                  <div className="match__cd-cell"><div className="match__cd-v">{String(cd.h).padStart(2, "0")}</div><div className="match__cd-k">Hrs</div></div>
+                  <div className="match__cd-cell"><div className="match__cd-v">{String(cd.m).padStart(2, "0")}</div><div className="match__cd-k">Min</div></div>
+                  <div className="match__cd-cell"><div className="match__cd-v">{String(cd.s).padStart(2, "0")}</div><div className="match__cd-k">Seg</div></div>
+                </div>
+              </div>
+              <div className="match__team match__team--away">
+                <div className="match__crest">{isAway ? <Crest size={56} /> : nextAway.slice(0, 3).toUpperCase()}</div>
+                <div>
+                  <div className="match__team-name">{isAway ? "Alcainça AC" : nextAway}</div>
+                  <div className="match__team-sub">Fora</div>
+                </div>
+              </div>
+            </div>
+            <div className="match__foot">
+              <span>{nextFpf?.date || "Data a confirmar"} · {compLabel}</span>
+              <span>Entrada livre para sócios</span>
+              <Link className="btn btn--primary" href="/calendario" style={{ padding: "10px 20px", fontSize: 11 }}>Ver calendário →</Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Últimas Notícias */}
-      <section className="py-24 bg-background">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-[var(--font-display)] text-5xl md:text-7xl tracking-wider text-foreground mb-4">
-              ÚLTIMAS <span className="text-gradient-gold">NOTÍCIAS</span>
-            </h2>
+      {/* Notícias */}
+      <section className="section">
+        <div className="container">
+          <div className="section__head">
+            <div>
+              <div className="eyebrow">O que se passa</div>
+              <h2 className="h-xl">Últimas do clube.</h2>
+            </div>
+            <p className="section__intro">
+              Resultados, entrevistas, convívios e tudo o que move o Alcainça durante a semana.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Novo site do Alcainça AC",
-                date: "MARÇO 2026",
-                desc: "O Alcainça Atlético Clube apresenta o seu novo site oficial, onde poderá acompanhar todas as novidades do clube.",
-              },
-              {
-                title: "Inscrições abertas",
-                date: "EM BREVE",
-                desc: "Fique atento às inscrições para a nova temporada nas modalidades de futebol e patinagem artística.",
-              },
-              {
-                title: "76 anos de história",
-                date: "ABRIL 2026",
-                desc: "O Alcainça AC prepara-se para celebrar 76 anos ao serviço da comunidade e do desporto.",
-              },
-            ].map((news, i) => (
-              <article
-                key={i}
-                className="bg-card border border-border rounded-xl overflow-hidden group hover:border-gold/40 transition-all duration-300"
-              >
-                <div className="h-1 gradient-gold w-0 group-hover:w-full transition-all duration-500" />
-                <div className="p-6">
-                  <span className="text-xs font-bold text-gold uppercase tracking-widest">{news.date}</span>
-                  <h3 className="font-[var(--font-display)] text-2xl tracking-wide text-foreground mt-2 mb-3">{news.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{news.desc}</p>
+          <div className="news">
+            {news.map((n, i) => (
+              <Link key={i} href="/noticias" className="news-card">
+                <div className="news-card__img" style={{ background: newsBg[n.tag] || newsBg.Clube }} />
+                <div className="news-card__body">
+                  <div className="news-card__meta">
+                    <span className="news-card__tag">{n.tag}</span>
+                    <span>{n.date}</span>
+                  </div>
+                  <h3 className="news-card__title">{n.title}</h3>
+                  <p className="news-card__excerpt">{n.excerpt}</p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Link
-              href="/noticias"
-              className="inline-flex items-center gap-2 text-gold font-semibold hover:gap-3 transition-all uppercase tracking-wide"
-            >
-              Todas as notícias &rarr;
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="cta-banner">
+        <div className="container cta-banner__inner">
+          <div>
+            <div className="eyebrow" style={{ color: "var(--c-accent)" }}>Junta-te</div>
+            <h2 className="h-xl" style={{ marginTop: "var(--sp-4)" }}>O clube só existe<br />com quem o faz.</h2>
+            <p style={{ marginTop: "var(--sp-5)" }}>
+              Torna-te sócio, experimenta a patinagem artística, apoia a equipa sénior, ou apareça no próximo jogo. O Alcainça é de todos.
+            </p>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-4)" }}>
+            <Link className="btn btn--primary" href="/socio">
+              Quero ser sócio <span className="btn__arrow">→</span>
+            </Link>
+            <Link className="btn btn--ghost" href="/contactos">
+              Inscrever atleta
             </Link>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 gradient-gold" />
-        <div className="absolute inset-0 sport-stripe opacity-20" />
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-[var(--font-display)] text-5xl md:text-7xl tracking-wider text-background mb-6">
-            JUNTA-TE AO ALCAINÇA AC
-          </h2>
-          <p className="text-background/80 text-lg max-w-lg mx-auto mb-10">
-            Faz parte da família do Alcainça Atlético Clube. Inscreve-te como sócio ou atleta.
-          </p>
-          <Link
-            href="/contactos"
-            className="inline-block bg-background text-foreground font-bold px-10 py-4 rounded-lg text-lg tracking-wide hover:scale-105 transition-transform duration-200 uppercase"
-          >
-            Inscrever-me
-          </Link>
-        </div>
-      </section>
-    </>
+      <Footer />
+    </div>
   );
 }
